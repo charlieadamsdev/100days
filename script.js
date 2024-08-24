@@ -1,29 +1,46 @@
 // Initialize variables
 let currentDay = 1;
 const totalDays = 100;
+const tasks = {
+    design: [
+        "Design a landing page for a tech startup",
+        "Create a logo for a sportswear brand",
+        "Design a login page",
+        // Add more tasks for 100 days
+    ],
+    coding: [
+        "Build a simple HTML page",
+        "Create a basic JavaScript function",
+        "Set up a local server",
+        // Add more tasks for 100 days
+    ]
+};
 
-// Start the challenge and save the selected category to localStorage
 function startChallenge() {
     const category = document.getElementById('category').value;
     localStorage.setItem('category', category);
-    localStorage.setItem('currentDay', currentDay);
-    window.location.href = "tracker.html";  // Navigate to the tracker page
+    localStorage.setItem('currentDay', 1); // Start from day 1
+    window.location.href = "tracker.html"; // Go to the tracker page
 }
 
-// Load the current challenge from localStorage
 function loadChallenge() {
-    const day = localStorage.getItem('currentDay') || 1;
-    document.getElementById('challenge-day').textContent = `Day ${day}: Complete Task`;
+    const category = localStorage.getItem('category');
+    const currentDay = parseInt(localStorage.getItem('currentDay'));
+
+    if (currentDay <= tasks[category].length) {
+        document.getElementById('challenge-day').textContent = `Day ${currentDay}`;
+        document.getElementById('task').textContent = tasks[category][currentDay - 1];
+    } else {
+        document.getElementById('challenge-day').textContent = "Challenge Completed!";
+        document.getElementById('task').textContent = "";
+        document.querySelector('button').style.display = "none"; // Hide the button
+    }
 }
 
-// Mark a task as complete and move to the next day
 function completeTask() {
-    let day = parseInt(localStorage.getItem('currentDay'));
-    if (day < totalDays) {
-        day += 1;
-        localStorage.setItem('currentDay', day);
-        loadChallenge();  // Update the tracker page
-    } else {
-        alert("Challenge Completed!");
-    }
+    let currentDay = parseInt(localStorage.getItem('currentDay'));
+    currentDay++;
+    localStorage.setItem('currentDay', currentDay);
+    loadChallenge(); // Refresh the page with the new task
+}
 }
