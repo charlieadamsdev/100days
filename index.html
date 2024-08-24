@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100 Days Challenge</title>
+    <title>Challenge Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>100 Days Challenge</h1>
-        <div class="dropdown">
-            <label for="category">Pick a category:</label>
-            <select id="category">
-                <option value="design">Design</option>
-                <!-- Add more categories as needed -->
-            </select>
-        </div>
-        <button onclick="startChallenge()">Start Challenge</button>
+        <h1 id="challenge-day"></h1>
+        <p id="task"></p>
+        <p>Current Streak: <span id="streak"></span> days</p>
+        <button onclick="completeTask()">Mark Task Complete</button>
     </div>
     
     <script src="script.js"></script>
+    <script>
+        window.onload = loadChallenge;
+    </script>
 </body>
 </html>

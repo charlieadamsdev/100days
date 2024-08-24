@@ -120,20 +120,47 @@ function startChallenge() {
 function loadChallenge() {
     const category = localStorage.getItem('category');
     const currentDay = parseInt(localStorage.getItem('currentDay'));
+    const streak = parseInt(localStorage.getItem('streak')) || 0;
 
     if (currentDay <= tasks[category].length) {
         document.getElementById('challenge-day').textContent = `Day ${currentDay}`;
         document.getElementById('task').textContent = tasks[category][currentDay - 1];
+        document.getElementById('streak').textContent = streak;
+        document.getElementById('restart-button').style.display = "none";  // Hide the button if tasks are not completed
     } else {
+        // Show Challenge Completed message and Restart button
         document.getElementById('challenge-day').textContent = "Challenge Completed!";
         document.getElementById('task').textContent = "";
-        document.querySelector('button').style.display = "none"; // Hide the button
+        document.querySelector('button[onclick="completeTask()"]').style.display = "none";
+
+        // Show the Restart button
+        document.getElementById('restart-button').style.display = "block";  // Make the button visible
     }
 }
 
 function completeTask() {
     let currentDay = parseInt(localStorage.getItem('currentDay'));
+    let streak = parseInt(localStorage.getItem('streak')) || 0;
+
+    // Increment streak if a task is completed
+    streak++;
+    localStorage.setItem('streak', streak);
+    document.getElementById('streak').textContent = streak;
+
     currentDay++;
     localStorage.setItem('currentDay', currentDay);
-    loadChallenge(); // Refresh the page with the new task
+    loadChallenge();
+}
+
+// Restart the challenge - temporary feature
+function restartChallenge() {
+    if (confirm("Are you sure you want to restart the challenge?")) {
+        localStorage.setItem('currentDay', 1);
+        localStorage.setItem('streak', 0);
+
+        // Make sure the "Mark Task Complete" button is shown again
+        document.querySelector('button[onclick="completeTask()"]').style.display = "block";
+
+        loadChallenge();  // Reload the first task
+    }
 }

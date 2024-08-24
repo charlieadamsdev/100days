@@ -8,9 +8,11 @@
 </head>
 <body>
     <div class="container">
+        <p>Current Streak: <span id="streak"></span> days</p>
         <h1 id="challenge-day"></h1>
         <p id="task"></p>
         <button onclick="completeTask()">Mark Task Complete</button>
+        <button id="restart-button" style="display: none;" onclick="restartChallenge()">Restart Challenge</button>
     </div>
     
     <script src="script.js"></script>
