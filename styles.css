@@ -50,10 +50,12 @@ button#restart-button:hover {
 .node {
     background-color: #333;
     color: white;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 300px;
     text-align: center;
+    border-radius: 10px;
+    position: relative;
 }
 
 .node.completed {
@@ -62,4 +64,11 @@ button#restart-button:hover {
 
 .node.current {
     background-color: #ffc107; /* Yellow for current task */
+    border: 2px solid #333; /* Add border to highlight the current task */
+}
+
+.node-container {
+    display: flex;
+    flex-direction: column-reverse; /* Ensure the latest node appears at the top */
+    align-items: center;
 }

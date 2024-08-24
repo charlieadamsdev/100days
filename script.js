@@ -115,12 +115,18 @@ const tasks = [
         nodeContainer.innerHTML = ''; // Clear the container
         const currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
     
-        // Create the node for the current task
-        if (currentDay <= tasks.length) {
+        // We only want to show the nodes up to the currentDay
+        for (let i = 0; i < currentDay; i++) {
             const node = document.createElement('div');
-            node.classList.add('node', 'current'); // Mark this as the current task
-            
-            node.innerHTML = `<p>Day ${currentDay}: ${tasks[currentDay - 1]}</p>`;
+            node.classList.add('node');
+    
+            if (i + 1 < currentDay) {
+                node.classList.add('completed'); // Mark completed tasks
+            } else if (i + 1 === currentDay) {
+                node.classList.add('current'); // Highlight the current task
+            }
+    
+            node.innerHTML = `<p>Day ${i + 1}: ${tasks[i]}</p>`;
             nodeContainer.appendChild(node);
         }
     
@@ -144,7 +150,7 @@ const tasks = [
         currentDay++;
         localStorage.setItem('currentDay', currentDay);
     
-        // Re-render the nodes to show the next task
+        // Re-render the nodes to show the next task while keeping previous tasks stacked
         renderNodes();
     }
     
