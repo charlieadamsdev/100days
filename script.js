@@ -17,11 +17,16 @@ const tasks = {
 };
 
 function startChallenge() {
-    const category = document.getElementById('category').value;
-    localStorage.setItem('category', category);
-    localStorage.setItem('currentDay', 1); // Start from day 1
-    window.location.href = "tracker.html"; // Go to the tracker page
+    const category = document.getElementById('category').value;  // Get selected category
+    if (category) {
+        localStorage.setItem('category', category);  // Store category in local storage
+        localStorage.setItem('currentDay', 1);  // Start from day 1
+        window.location.href = "tracker.html";  // Redirect to tracker page
+    } else {
+        alert("Please select a category");
+    }
 }
+
 
 function loadChallenge() {
     const category = localStorage.getItem('category');
@@ -42,5 +47,4 @@ function completeTask() {
     currentDay++;
     localStorage.setItem('currentDay', currentDay);
     loadChallenge(); // Refresh the page with the new task
-}
 }
