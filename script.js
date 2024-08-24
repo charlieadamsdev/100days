@@ -1,8 +1,7 @@
 // Initialize variables
 let currentDay = 1;
 const totalDays = 100;
-const tasks = {
-    design: [
+const tasks = [
         "Simple Button design",
         "Login Form",
         "Registration Form",
@@ -103,64 +102,59 @@ const tasks = {
         "Custom Map Integration",
         "Advanced Multi-Step Form with Validation",
         "Interactive Chatbot UI"
-    ]
-};
+    ];
 
-function startChallenge() {
-    const category = document.getElementById('category').value;
-    if (category) {
-        localStorage.setItem('category', category);
-        localStorage.setItem('currentDay', 1); // Start from day 1
-        window.location.href = "tracker.html"; // Redirect to tracker page
-    } else {
-        alert("Please select a category");
+    function renderNodes() {
+        const nodeContainer = document.querySelector('.node-container');
+        
+        if (!nodeContainer) {
+            console.error("Node container is missing.");
+            return;
+        }
+        
+        nodeContainer.innerHTML = ''; // Clear the container
+        const currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
+    
+        // Create the node for the current task
+        if (currentDay <= tasks.length) {
+            const node = document.createElement('div');
+            node.classList.add('node', 'current'); // Mark this as the current task
+            
+            node.innerHTML = `<p>Day ${currentDay}: ${tasks[currentDay - 1]}</p>`;
+            nodeContainer.appendChild(node);
+        }
+    
+        // Adjust button visibility based on the progress
+        const completeTaskButton = document.getElementById('complete-task');
+        const restartButton = document.getElementById('restart-button');
+    
+        if (currentDay > tasks.length) {
+            completeTaskButton.style.display = 'none';
+            restartButton.style.display = 'block';
+        } else {
+            completeTaskButton.style.display = 'block';
+            restartButton.style.display = 'none';
+        }
     }
-}
-
-function loadChallenge() {
-    const category = localStorage.getItem('category');
-    const currentDay = parseInt(localStorage.getItem('currentDay'));
-    const streak = parseInt(localStorage.getItem('streak')) || 0;
-
-    if (currentDay <= tasks[category].length) {
-        document.getElementById('challenge-day').textContent = `Day ${currentDay}`;
-        document.getElementById('task').textContent = tasks[category][currentDay - 1];
-        document.getElementById('streak').textContent = streak;
-        document.getElementById('restart-button').style.display = "none";  // Hide the button if tasks are not completed
-    } else {
-        // Show Challenge Completed message and Restart button
-        document.getElementById('challenge-day').textContent = "Challenge Completed!";
-        document.getElementById('task').textContent = "";
-        document.querySelector('button[onclick="completeTask()"]').style.display = "none";
-
-        // Show the Restart button
-        document.getElementById('restart-button').style.display = "block";  // Make the button visible
+    
+    function completeTask() {
+        let currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
+    
+        // Increment the day count
+        currentDay++;
+        localStorage.setItem('currentDay', currentDay);
+    
+        // Re-render the nodes to show the next task
+        renderNodes();
     }
-}
-
-function completeTask() {
-    let currentDay = parseInt(localStorage.getItem('currentDay'));
-    let streak = parseInt(localStorage.getItem('streak')) || 0;
-
-    // Increment streak if a task is completed
-    streak++;
-    localStorage.setItem('streak', streak);
-    document.getElementById('streak').textContent = streak;
-
-    currentDay++;
-    localStorage.setItem('currentDay', currentDay);
-    loadChallenge();
-}
-
-// Restart the challenge - temporary feature
-function restartChallenge() {
-    if (confirm("Are you sure you want to restart the challenge?")) {
-        localStorage.setItem('currentDay', 1);
-        localStorage.setItem('streak', 0);
-
-        // Make sure the "Mark Task Complete" button is shown again
-        document.querySelector('button[onclick="completeTask()"]').style.display = "block";
-
-        loadChallenge();  // Reload the first task
+    
+    function restartChallenge() {
+        if (confirm("Are you sure you want to restart the challenge?")) {
+            localStorage.setItem('currentDay', 1);
+            
+            // Re-render the nodes and reset everything
+            renderNodes();
+        }
     }
-}
+    
+    window.onload = renderNodes;

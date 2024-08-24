@@ -8,16 +8,17 @@
 </head>
 <body>
     <div class="container">
-        <p>Current Streak: <span id="streak"></span> days</p>
-        <h1 id="challenge-day"></h1>
-        <p id="task"></p>
-        <button onclick="completeTask()">Mark Task Complete</button>
+        <h1>100 Days of Design Challenge</h1>
+
+        <div class="node-container">
+            <!-- Nodes will be dynamically added here -->
+        </div>
+
+        <!-- Buttons for interaction -->
+        <button id="complete-task" onclick="completeTask()">Mark Task Complete</button>
         <button id="restart-button" style="display: none;" onclick="restartChallenge()">Restart Challenge</button>
     </div>
     
     <script src="script.js"></script>
-    <script>
-        window.onload = loadChallenge;
-    </script>
 </body>
 </html>
