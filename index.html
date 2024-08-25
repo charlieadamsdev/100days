@@ -8,16 +8,12 @@
 </head>
 <body onload="renderNodes()">
     <div class="challenge-container">
-        <div class="current-task-container">
-            <!-- Current task node will be displayed here -->
-        </div>
-        <div class="completed-tasks-container">
-            <div class="node-container">
-                <!-- Completed nodes will be dynamically added here -->
-            </div>
-        </div>
+        <!-- Nodes will be dynamically inserted here -->
     </div>
-    <button id="restart-button" style="display: none;" onclick="restartChallenge()">Restart Challenge</button>
+
+    <!-- Add this button for restart -->
+    <button id="restart-button" onclick="restartChallenge()" style="display:none;">Restart Challenge</button>
+
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,68 +1,48 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
+body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #000;
+    min-height: 100vh;
+    margin: 0;
     font-family: Arial, sans-serif;
+    background-color: #000;
 }
 
-/* Overall container */
 .challenge-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-/* Fixed container for current task */
-.current-task-container {
-    position: relative; /* Changed to relative */
-    margin-bottom: 20px; /* Adds space between current and completed nodes */
-    z-index: 1; /* Ensure current task stays on top */
-}
-
-/* Scrollable container for completed tasks */
-.completed-tasks-container {
-    overflow-y: auto;
-    max-height: 60vh; /* Adjust height as necessary */
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    max-width: 400px;
 }
 
-/* Each node */
 .node {
-    background-color: #28a745; /* Green for completed */
-    color: white;
     padding: 20px;
-    border-radius: 10px;
     margin: 10px 0;
-    width: 300px;
+    width: 100%;
     text-align: center;
-}
-
-/* Current task styling */
-.node.current {
-    background-color: #ffc107; /* Yellow for current task */
-}
-
-/* Button inside the current task */
-.complete-task-button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #007bff;
+    border-radius: 10px;
+    background-color: green;
     color: white;
+}
+
+.node.current {
+    background-color: orange;
+}
+
+.node.completed {
+    background-color: green;
+}
+
+.complete-task-button {
+    background-color: blue;
+    color: white;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
 .complete-task-button:hover {
-    background-color: #0056b3;
+    background-color: darkblue;
 }

@@ -1,5 +1,5 @@
 // Initialize variables
-let currentDay = 1;
+let currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
 const totalDays = 100;
 const tasks = [
         "Simple Button design",
@@ -104,67 +104,55 @@ const tasks = [
         "Interactive Chatbot UI"
     ];
 
-    function renderNodes() {
-        const currentTaskContainer = document.querySelector('.current-task-container');
-        const nodeContainer = document.querySelector('.node-container');
-        
-        if (!currentTaskContainer || !nodeContainer) {
-            console.error("Node containers are missing.");
-            return;
-        }
-    
-        nodeContainer.innerHTML = ''; // Clear the container
-        const currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
-    
-        // Display current task in the fixed container
-        const currentTaskNode = document.createElement('div');
-        currentTaskNode.classList.add('node', 'current');
-        currentTaskNode.innerHTML = `<p>Day ${currentDay}: ${tasks[currentDay - 1]}</p>`;
-    
-        const completeButton = document.createElement('button');
-        completeButton.innerHTML = 'Mark Task Complete';
-        completeButton.classList.add('complete-task-button');
-        completeButton.onclick = completeTask;
-        currentTaskNode.appendChild(completeButton);
-    
-        currentTaskContainer.innerHTML = ''; // Clear the current task container
-        currentTaskContainer.appendChild(currentTaskNode);
-    
-        // Display completed tasks in the scrollable container
-        for (let i = currentDay - 1; i > 0; i--) {
-            const node = document.createElement('div');
-            node.classList.add('node', 'completed'); // Mark as completed
-            node.innerHTML = `<p>Day ${i}: ${tasks[i - 1]}</p>`;
-            nodeContainer.appendChild(node);
-        }
-    
-        // Show the restart button if all tasks are completed
-        const restartButton = document.getElementById('restart-button');
-        if (currentDay > tasks.length) {
-            restartButton.style.display = 'block';
-        } else {
-            restartButton.style.display = 'none';
-        }
+function renderNodes() {
+    const nodeContainer = document.querySelector('.challenge-container');
+    nodeContainer.innerHTML = ''; // Clear the container
+
+    // Render the current task
+    if (currentDay <= tasks.length) {
+        const currentNode = document.createElement('div');
+        currentNode.classList.add('node', 'current');
+        currentNode.innerHTML = `<p>Day ${currentDay}: ${tasks[currentDay - 1]}</p>
+                                 <button class="complete-task-button" onclick="completeTask()">Mark Task Complete</button>`;
+        nodeContainer.appendChild(currentNode);
     }
-    
-    function completeTask() {
-        let currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
-    
-        // Increment the day count
-        currentDay++;
-        localStorage.setItem('currentDay', currentDay);
-    
-        // Re-render the nodes to show the next task while keeping previous tasks stacked
-        renderNodes();
+
+    // Render completed tasks below the current task
+    for (let i = currentDay - 1; i > 0; i--) {
+        const completedNode = document.createElement('div');
+        completedNode.classList.add('node', 'completed');
+        completedNode.innerHTML = `<p>Day ${i}: ${tasks[i - 1]}</p>`;
+        nodeContainer.appendChild(completedNode);
     }
-    
-    function restartChallenge() {
-        if (confirm("Are you sure you want to restart the challenge?")) {
-            localStorage.setItem('currentDay', 1);
-            
-            // Re-render the nodes and reset everything
-            renderNodes();
-        }
+
+    // Scroll the current task to the center of the screen
+    scrollToCurrentNode();
+}
+
+function completeTask() {
+    currentDay++; // Increment the task counter
+    if (currentDay > tasks.length) {
+        currentDay = tasks.length; // Prevent exceeding the total number of tasks
     }
-    
-    window.onload = renderNodes;
+    localStorage.setItem('currentDay', currentDay); // Save the current day in local storage
+    renderNodes(); // Re-render the nodes
+}
+
+function restartChallenge() {
+    if (confirm("Are you sure you want to restart the challenge?")) {
+        currentDay = 1; // Reset to the first day
+        localStorage.setItem('currentDay', currentDay); // Save the reset in local storage
+        renderNodes(); // Re-render the nodes
+    }
+}
+
+// Helper function to scroll the current task into the center of the viewport
+function scrollToCurrentNode() {
+    const currentNode = document.querySelector('.node.current');
+    if (currentNode) {
+        currentNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Render the initial nodes on page load
+renderNodes();
