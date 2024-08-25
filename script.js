@@ -105,40 +105,44 @@ const tasks = [
     ];
 
     function renderNodes() {
+        const currentTaskContainer = document.querySelector('.current-task-container');
         const nodeContainer = document.querySelector('.node-container');
         
-        if (!nodeContainer) {
-            console.error("Node container is missing.");
+        if (!currentTaskContainer || !nodeContainer) {
+            console.error("Node containers are missing.");
             return;
         }
-        
+    
         nodeContainer.innerHTML = ''; // Clear the container
         const currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
     
-        // We only want to show the nodes up to the currentDay
-        for (let i = 0; i < currentDay; i++) {
+        // Display current task in the fixed container
+        const currentTaskNode = document.createElement('div');
+        currentTaskNode.classList.add('node', 'current');
+        currentTaskNode.innerHTML = `<p>Day ${currentDay}: ${tasks[currentDay - 1]}</p>`;
+    
+        const completeButton = document.createElement('button');
+        completeButton.innerHTML = 'Mark Task Complete';
+        completeButton.classList.add('complete-task-button');
+        completeButton.onclick = completeTask;
+        currentTaskNode.appendChild(completeButton);
+    
+        currentTaskContainer.innerHTML = ''; // Clear the current task container
+        currentTaskContainer.appendChild(currentTaskNode);
+    
+        // Display completed tasks in the scrollable container
+        for (let i = currentDay - 1; i > 0; i--) {
             const node = document.createElement('div');
-            node.classList.add('node');
-    
-            if (i + 1 < currentDay) {
-                node.classList.add('completed'); // Mark completed tasks
-            } else if (i + 1 === currentDay) {
-                node.classList.add('current'); // Highlight the current task
-            }
-    
-            node.innerHTML = `<p>Day ${i + 1}: ${tasks[i]}</p>`;
+            node.classList.add('node', 'completed'); // Mark as completed
+            node.innerHTML = `<p>Day ${i}: ${tasks[i - 1]}</p>`;
             nodeContainer.appendChild(node);
         }
     
-        // Adjust button visibility based on the progress
-        const completeTaskButton = document.getElementById('complete-task');
+        // Show the restart button if all tasks are completed
         const restartButton = document.getElementById('restart-button');
-    
         if (currentDay > tasks.length) {
-            completeTaskButton.style.display = 'none';
             restartButton.style.display = 'block';
         } else {
-            completeTaskButton.style.display = 'block';
             restartButton.style.display = 'none';
         }
     }

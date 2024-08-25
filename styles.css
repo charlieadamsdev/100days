@@ -1,74 +1,68 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #111;
-    color: #fff;
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    background-color: #000;
+    font-family: Arial, sans-serif;
 }
 
-.container {
-    text-align: center;
+/* Overall container */
+.challenge-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
 
-button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+/* Fixed container for current task */
+.current-task-container {
+    position: relative; /* Changed to relative */
+    margin-bottom: 20px; /* Adds space between current and completed nodes */
+    z-index: 1; /* Ensure current task stays on top */
 }
 
-button:hover {
-    background-color: #218838;
+/* Scrollable container for completed tasks */
+.completed-tasks-container {
+    overflow-y: auto;
+    max-height: 60vh; /* Adjust height as necessary */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-button#restart-button {
-    background-color: #ffc107;
-    margin-top: 10px;
-}
-
-button#restart-button:hover {
-    background-color: #e0a800;
-}
-
-
-.dropdown select {
-    padding: 10px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    margin-top: 10px;
-}
-
+/* Each node */
 .node {
-    background-color: #333;
+    background-color: #28a745; /* Green for completed */
     color: white;
     padding: 20px;
-    margin: 20px auto;
+    border-radius: 10px;
+    margin: 10px 0;
     width: 300px;
     text-align: center;
-    border-radius: 10px;
-    position: relative;
 }
 
-.node.completed {
-    background-color: #28a745; /* Green for completed */
-}
-
+/* Current task styling */
 .node.current {
     background-color: #ffc107; /* Yellow for current task */
-    border: 2px solid #333; /* Add border to highlight the current task */
 }
 
-.node-container {
-    display: flex;
-    flex-direction: column-reverse; /* Ensure the latest node appears at the top */
-    align-items: center;
+/* Button inside the current task */
+.complete-task-button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.complete-task-button:hover {
+    background-color: #0056b3;
 }
