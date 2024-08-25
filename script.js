@@ -1,6 +1,7 @@
 // Initialize variables
-let currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
-const totalDays = 100;
+console.log("Script loaded");
+
+let currentDay = 1;
 const tasks = [
         "Simple Button design",
         "Login Form",
@@ -104,55 +105,93 @@ const tasks = [
         "Interactive Chatbot UI"
     ];
 
-function renderNodes() {
-    const nodeContainer = document.querySelector('.challenge-container');
-    nodeContainer.innerHTML = ''; // Clear the container
-
-    // Render the current task
-    if (currentDay <= tasks.length) {
-        const currentNode = document.createElement('div');
-        currentNode.classList.add('node', 'current');
-        currentNode.innerHTML = `<p>Day ${currentDay}: ${tasks[currentDay - 1]}</p>
-                                 <button class="complete-task-button" onclick="completeTask()">Mark Task Complete</button>`;
-        nodeContainer.appendChild(currentNode);
+    function renderNodes() {
+        console.log("renderNodes called");
+        const nodeContainer = document.querySelector('.challenge-container');
+        if (!nodeContainer) {
+            console.error("Challenge container not found");
+            return;
+        }
+        nodeContainer.innerHTML = ''; // Clear the container
+    
+        function createNodeElement(day, content) {
+            const nodeContainer = document.createElement('div');
+            nodeContainer.classList.add('node-container');
+    
+            const node = document.createElement('div');
+            node.classList.add('node');
+            node.innerHTML = content;
+    
+            const line = document.createElement('div');
+            line.classList.add('connecting-line');
+    
+            nodeContainer.appendChild(node);
+            nodeContainer.appendChild(line);
+    
+            return nodeContainer;
+        }
+    
+        // Render the current task
+        if (currentDay <= tasks.length) {
+            const currentNodeContent = `
+                <h2>Day ${currentDay.toString().padStart(3, '0')}</h2>
+                <p>${tasks[currentDay - 1]}</p>
+                <div class="image-upload">
+                    <label for="file-input">
+                        <img src="upload-icon.png" alt="Upload"/>
+                    </label>
+                    <input id="file-input" type="file" accept="image/*" onchange="handleImageUpload(event, ${currentDay})"/>
+                </div>
+                <button class="complete-task-button" onclick="completeTask()">Mark Complete</button>
+            `;
+            nodeContainer.appendChild(createNodeElement(currentDay, currentNodeContent));
+        }
+    
+        // Render completed tasks
+        for (let i = currentDay - 1; i > 0; i--) {
+            const completedNodeContent = `
+                <h2>Day ${i.toString().padStart(3, '0')}</h2>
+                <p>${tasks[i - 1]}</p>
+                <img src="${localStorage.getItem(`day${i}Image`) || 'placeholder.png'}" alt="Completed task"/>
+            `;
+            nodeContainer.appendChild(createNodeElement(i, completedNodeContent));
+        }
+    
+        // Remove the last connecting line
+        const lastNode = nodeContainer.lastElementChild;
+        if (lastNode) {
+            const lastLine = lastNode.querySelector('.connecting-line');
+            if (lastLine) lastLine.remove();
+        }
     }
-
-    // Render completed tasks below the current task
-    for (let i = currentDay - 1; i > 0; i--) {
-        const completedNode = document.createElement('div');
-        completedNode.classList.add('node', 'completed');
-        completedNode.innerHTML = `<p>Day ${i}: ${tasks[i - 1]}</p>`;
-        nodeContainer.appendChild(completedNode);
+    
+    function handleImageUpload(event, day) {
+        console.log("Image upload triggered for day:", day);
+        // ... rest of the function remains the same
     }
-
-    // Scroll the current task to the center of the screen
-    scrollToCurrentNode();
-}
-
-function completeTask() {
-    currentDay++; // Increment the task counter
-    if (currentDay > tasks.length) {
-        currentDay = tasks.length; // Prevent exceeding the total number of tasks
+    
+    function completeTask() {
+        console.log("Complete task called");
+        if (currentDay < tasks.length) {
+            currentDay++;
+            localStorage.setItem('currentDay', currentDay);
+            renderNodes();
+        } else {
+            console.log("Challenge completed!");
+            // You can add some celebration or reset functionality here
+        }
     }
-    localStorage.setItem('currentDay', currentDay); // Save the current day in local storage
-    renderNodes(); // Re-render the nodes
-}
-
-function restartChallenge() {
-    if (confirm("Are you sure you want to restart the challenge?")) {
-        currentDay = 1; // Reset to the first day
-        localStorage.setItem('currentDay', currentDay); // Save the reset in local storage
-        renderNodes(); // Re-render the nodes
+    
+    function restartChallenge() {
+        console.log("Restart challenge called");
+        currentDay = 1;
+        localStorage.clear();
+        renderNodes();
     }
-}
-
-// Helper function to scroll the current task into the center of the viewport
-function scrollToCurrentNode() {
-    const currentNode = document.querySelector('.node.current');
-    if (currentNode) {
-        currentNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-}
-
-// Render the initial nodes on page load
-renderNodes();
+    
+    // Call renderNodes when the page loads
+    window.onload = function() {
+        console.log("Window loaded");
+        currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
+        renderNodes();
+    };

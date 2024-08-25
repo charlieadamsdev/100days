@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge Tracker</title>
+    <title>100 Day Design Challenge</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body onload="renderNodes()">
-    <div class="challenge-container">
-        <!-- Nodes will be dynamically inserted here -->
-    </div>
-
-    <!-- Add this button for restart -->
-    <button id="restart-button" onclick="restartChallenge()" style="display:none;">Restart Challenge</button>
-
+<body>
+    <div class="challenge-container"></div>
+    <button class="restart-button" onclick="restartChallenge()">Restart Challenge</button>
     <script src="script.js"></script>
 </body>
 </html>

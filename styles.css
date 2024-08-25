@@ -1,48 +1,86 @@
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+body, html {
+    height: 100%;
     margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    background-color: #121212;
+    color: #ffffff;
     font-family: Arial, sans-serif;
-    background-color: #000;
+    display: flex;
+    flex-direction: column;
 }
 
 .challenge-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 40px);
+}
+
+.node-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 400px;
 }
 
 .node {
+    background-color: #1e1e1e;
+    border-radius: 10px;
     padding: 20px;
     margin: 10px 0;
-    width: 100%;
+    width: 80%;
+    max-width: 400px;
     text-align: center;
-    border-radius: 10px;
-    background-color: green;
-    color: white;
 }
 
-.node.current {
-    background-color: orange;
+.connecting-line {
+    width: 2px;
+    height: 40px; /* Adjust this value to change the gap between nodes */
+    background-color: #333;
 }
 
-.node.completed {
-    background-color: green;
+/* Styles for the current node */
+.node-container:first-child .node {
+    border: 2px solid #4CAF50;
+}
+
+/* Hide the connecting line for the last node */
+.node-container:last-child .connecting-line {
+    display: none;
+}
+
+.image-upload input {
+    display: none;
+}
+
+.image-upload img {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
 }
 
 .complete-task-button {
-    background-color: blue;
+    background-color: #4CAF50;
     color: white;
-    padding: 10px;
     border: none;
+    padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 10px;
 }
 
-.complete-task-button:hover {
-    background-color: darkblue;
+.restart-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
 }
+
