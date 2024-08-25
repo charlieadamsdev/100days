@@ -129,28 +129,24 @@ const tasks = [
                 <p>${content.task}</p>
             `;
 
-            // Only add image container for current day or completed tasks with images
             if (day === currentDay || (day < currentDay && content.image)) {
                 const imageContainer = document.createElement('div');
                 imageContainer.classList.add('node-image-container');
                 
                 if (day === currentDay) {
-                    // Current day - add upload functionality
                     imageContainer.innerHTML = `
                         <label for="file-input-${day}">
-                            <img src="upload-icon.png" alt="Upload" style="cursor: pointer;"/>
+                            <img src="upload-icon.png" alt="Upload" style="width: 64px; height: 64px; cursor: pointer;"/>
                         </label>
                         <input id="file-input-${day}" type="file" accept="image/*" onchange="handleImageUpload(event, ${day})" style="display: none;"/>
                     `;
                 } else if (content.image) {
-                    // Completed task with image
                     imageContainer.innerHTML = `<img src="${content.image}" alt="Day ${day} task">`;
                 }
                 
                 node.appendChild(imageContainer);
             }
 
-            // Add complete button only for current day
             if (day === currentDay) {
                 const button = document.createElement('button');
                 button.classList.add('complete-task-button');
@@ -169,7 +165,6 @@ const tasks = [
             return nodeContainer;
         }
     
-        // Render the current task
         if (currentDay <= tasks.length) {
             const currentNodeContent = {
                 task: tasks[currentDay - 1],
@@ -178,7 +173,6 @@ const tasks = [
             nodeContainer.appendChild(createNodeElement(currentDay, currentNodeContent));
         }
     
-        // Render completed tasks
         for (let i = currentDay - 1; i > 0; i--) {
             const completedNodeContent = {
                 task: tasks[i - 1],
@@ -187,12 +181,13 @@ const tasks = [
             nodeContainer.appendChild(createNodeElement(i, completedNodeContent));
         }
     
-        // Remove the last connecting line
         const lastNode = nodeContainer.lastElementChild;
         if (lastNode) {
             const lastLine = lastNode.querySelector('.connecting-line');
             if (lastLine) lastLine.remove();
         }
+
+        updateZoomButtonStates();
     }
     
     function handleImageUpload(event, day) {
@@ -203,7 +198,6 @@ const tasks = [
                 localStorage.setItem(`day${day}Image`, e.target.result);
                 document.querySelector('.complete-task-button').disabled = false;
                 
-                // Create or update the image element
                 let img = document.querySelector('.node img');
                 if (!img) {
                     img = document.createElement('img');
@@ -231,7 +225,6 @@ const tasks = [
             renderNodes();
         } else {
             console.log("Challenge completed!");
-            // You can add some celebration or reset functionality here
         }
     }
     
@@ -262,7 +255,23 @@ const tasks = [
         }
     }
     
-    // Call renderNodes when the page loads
+    let isZoomedOut = false;
+
+    function toggleZoom() {
+        const container = document.querySelector('.challenge-container');
+        isZoomedOut = !isZoomedOut;
+        if (isZoomedOut) {
+            container.classList.add('zoomed-out');
+        } else {
+            container.classList.remove('zoomed-out');
+        }
+    }
+
+    function updateZoomButtonStates() {
+        document.getElementById('zoom-in').disabled = !isZoomedOut;
+        document.getElementById('zoom-out').disabled = isZoomedOut;
+    }
+
     window.onload = function() {
         console.log("Window loaded");
         currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
