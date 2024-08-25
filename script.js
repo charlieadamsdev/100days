@@ -117,43 +117,73 @@ const tasks = [
         function createNodeElement(day, content) {
             const nodeContainer = document.createElement('div');
             nodeContainer.classList.add('node-container');
-    
+
             const node = document.createElement('div');
             node.classList.add('node');
-            node.innerHTML = content;
-    
+            if (day === currentDay) {
+                node.classList.add('current');
+            }
+            
+            node.innerHTML = `
+                <h2>Day ${day.toString().padStart(3, '0')}</h2>
+                <p>${content.task}</p>
+            `;
+
+            // Only add image container for current day or completed tasks with images
+            if (day === currentDay || (day < currentDay && content.image)) {
+                const imageContainer = document.createElement('div');
+                imageContainer.classList.add('node-image-container');
+                
+                if (day === currentDay) {
+                    // Current day - add upload functionality
+                    imageContainer.innerHTML = `
+                        <label for="file-input-${day}">
+                            <img src="upload-icon.png" alt="Upload" style="cursor: pointer;"/>
+                        </label>
+                        <input id="file-input-${day}" type="file" accept="image/*" onchange="handleImageUpload(event, ${day})" style="display: none;"/>
+                    `;
+                } else if (content.image) {
+                    // Completed task with image
+                    imageContainer.innerHTML = `<img src="${content.image}" alt="Day ${day} task">`;
+                }
+                
+                node.appendChild(imageContainer);
+            }
+
+            // Add complete button only for current day
+            if (day === currentDay) {
+                const button = document.createElement('button');
+                button.classList.add('complete-task-button');
+                button.innerHTML = '✓';
+                button.onclick = completeTask;
+                button.disabled = !content.image;
+                node.appendChild(button);
+            }
+
             const line = document.createElement('div');
             line.classList.add('connecting-line');
-    
+
             nodeContainer.appendChild(node);
             nodeContainer.appendChild(line);
-    
+
             return nodeContainer;
         }
     
         // Render the current task
         if (currentDay <= tasks.length) {
-            const currentNodeContent = `
-                <h2>Day ${currentDay.toString().padStart(3, '0')}</h2>
-                <p>${tasks[currentDay - 1]}</p>
-                <div class="image-upload">
-                    <label for="file-input">
-                        <img src="upload-icon.png" alt="Upload"/>
-                    </label>
-                    <input id="file-input" type="file" accept="image/*" onchange="handleImageUpload(event, ${currentDay})"/>
-                </div>
-                <button class="complete-task-button" onclick="completeTask()">Mark Complete</button>
-            `;
+            const currentNodeContent = {
+                task: tasks[currentDay - 1],
+                image: localStorage.getItem(`day${currentDay}Image`)
+            };
             nodeContainer.appendChild(createNodeElement(currentDay, currentNodeContent));
         }
     
         // Render completed tasks
         for (let i = currentDay - 1; i > 0; i--) {
-            const completedNodeContent = `
-                <h2>Day ${i.toString().padStart(3, '0')}</h2>
-                <p>${tasks[i - 1]}</p>
-                <img src="${localStorage.getItem(`day${i}Image`) || 'placeholder.png'}" alt="Completed task"/>
-            `;
+            const completedNodeContent = {
+                task: tasks[i - 1],
+                image: localStorage.getItem(`day${i}Image`)
+            };
             nodeContainer.appendChild(createNodeElement(i, completedNodeContent));
         }
     
@@ -166,12 +196,35 @@ const tasks = [
     }
     
     function handleImageUpload(event, day) {
-        console.log("Image upload triggered for day:", day);
-        // ... rest of the function remains the same
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem(`day${day}Image`, e.target.result);
+                document.querySelector('.complete-task-button').disabled = false;
+                
+                // Create or update the image element
+                let img = document.querySelector('.node img');
+                if (!img) {
+                    img = document.createElement('img');
+                    document.querySelector('.node').appendChild(img);
+                }
+                img.src = e.target.result;
+                img.alt = `Day ${day} completed task`;
+                
+                console.log('Image uploaded for day', day);
+            }
+            reader.readAsDataURL(file);
+        }
     }
     
     function completeTask() {
         console.log("Complete task called");
+        const uploadedImage = localStorage.getItem(`day${currentDay}Image`);
+        if (!uploadedImage) {
+            alert("Please upload an image before marking the task as complete.");
+            return;
+        }
         if (currentDay < tasks.length) {
             currentDay++;
             localStorage.setItem('currentDay', currentDay);
@@ -189,9 +242,30 @@ const tasks = [
         renderNodes();
     }
     
+    function updateProgressBar() {
+        const progress = (currentDay - 1) / tasks.length * 100;
+        const progressBar = document.querySelector('.progress-bar') || document.createElement('div');
+        progressBar.className = 'progress-bar';
+        progressBar.style.width = `${progress}%`;
+        progressBar.textContent = `${Math.round(progress)}%`;
+        document.body.insertBefore(progressBar, document.body.firstChild);
+    }
+    
+    function shareProgress() {
+        const text = `I'm on Day ${currentDay} of my 100-day design challenge! 🎨✨`;
+        if (navigator.share) {
+            navigator.share({text: text})
+                .then(() => console.log('Shared successfully'))
+                .catch((error) => console.log('Error sharing', error));
+        } else {
+            prompt('Copy this text to share:', text);
+        }
+    }
+    
     // Call renderNodes when the page loads
     window.onload = function() {
         console.log("Window loaded");
         currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
         renderNodes();
+        updateProgressBar();
     };
