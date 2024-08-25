@@ -243,6 +243,9 @@ const tasks = [
         progressBar.textContent = `${Math.round(progress)}%`;
         document.body.insertBefore(progressBar, document.body.firstChild);
     }
+
+
+    //test
     
     function shareProgress() {
         const text = `I'm on Day ${currentDay} of my 100-day design challenge! 🎨✨`;
