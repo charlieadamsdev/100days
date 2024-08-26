@@ -259,3 +259,86 @@ body {
     justify-content: center;
     padding: 10px;
 }
+
+.login-page {
+    display: flex;
+    height: 100vh;
+    background-color: #121212;
+}
+
+.login-container {
+    display: flex;
+    width: 100%;
+}
+
+.login-form {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-image {
+    flex: 1;
+    background-image: url('path-to-your-image.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.logo {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+.social-login {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.social-login button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.or-divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #888;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #222;
+    color: #fff;
+}
+
+.continue-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.signup-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #888;
+}
+
+.signup-link a {
+    color: #4CAF50;
+    text-decoration: none;
+}

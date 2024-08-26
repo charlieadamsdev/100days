@@ -406,6 +406,11 @@ function updateZoomButtonStates() {
 
 window.onload = function() {
     console.log("Window loaded");
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+        window.location.href = 'login.html';
+        return;
+    }
     currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
     if (challengeContainer) {
         renderNodes();
@@ -418,3 +423,8 @@ window.onload = function() {
         console.error("Challenge container not found on load");
     }
 };
+
+function logout() {
+    localStorage.removeItem('isLoggedIn');
+    window.location.href = 'login.html';
+}
