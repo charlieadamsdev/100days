@@ -110,53 +110,80 @@ body {
 }
 
 .zoom-controls {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
 }
 
 .zoom-button {
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
 }
 
 .zoom-button:hover {
-  background-color: #555;
+    background-color: #555;
 }
 
 /* Styles for zoomed out state */
 .zoomed-out .node {
-  width: 60%;
-  max-width: 300px;
-  min-height: 150px;
-  padding: 15px;
+    width: 60%;
+    max-width: 300px;
+    min-height: 150px;
+    padding: 15px;
 }
 
 .zoomed-out .node h2 {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 .zoomed-out .node p {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .zoomed-out .node-image-container {
-  width: 100px;
-  height: 100px;
+    width: 100px;
+    height: 100px;
 }
 
 .zoomed-out .connecting-line {
-  height: 30px;
+    height: 30px;
+}
+
+.zoom-controls button {
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.challenge-container.zoomed-out {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.zoomed-out .node-container {
+    margin-bottom: 0;
+}
+
+.zoomed-out .connecting-line {
+    display: none;
 }

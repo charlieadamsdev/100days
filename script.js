@@ -281,3 +281,48 @@ const tasks = [
         renderNodes();
         updateProgressBar();
     };
+
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const challengeContainer = document.querySelector('.challenge-container');
+
+    function zoomIn() {
+        challengeContainer.classList.remove('zoomed-out');
+        arrangeNodesVertically();
+    }
+
+    function zoomOut() {
+        challengeContainer.classList.add('zoomed-out');
+        arrangeNodesInGrid();
+    }
+
+    function arrangeNodesVertically() {
+        const nodes = Array.from(challengeContainer.querySelectorAll('.node-container'));
+        nodes.sort((a, b) => {
+            const dayA = parseInt(a.querySelector('h2').textContent.match(/\d+/)[0]);
+            const dayB = parseInt(b.querySelector('h2').textContent.match(/\d+/)[0]);
+            return dayB - dayA;
+        });
+    
+        challengeContainer.innerHTML = '';
+        nodes.forEach((node, index) => {
+            challengeContainer.appendChild(node);
+            if (index < nodes.length - 1) {
+                const line = document.createElement('div');
+                line.classList.add('connecting-line');
+                challengeContainer.appendChild(line);
+            }
+        });
+    }
+
+    function arrangeNodesInGrid() {
+        const nodes = Array.from(challengeContainer.querySelectorAll('.node-container'));
+        challengeContainer.innerHTML = '';
+        nodes.forEach(node => challengeContainer.appendChild(node));
+    }
+
+    zoomInBtn.addEventListener('click', zoomIn);
+    zoomOutBtn.addEventListener('click', zoomOut);
+
+    // Initial setup
+    arrangeNodesVertically();
