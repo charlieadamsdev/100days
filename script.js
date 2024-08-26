@@ -34,7 +34,7 @@ const tasks = [
         "Light/Dark Mode Toggle",
         "Error 404 Page",
         "Sticky Navigation Bar",
-        "Step-by-Step Form UI",
+        "Step-by-step Form UI",
         "Interactive Checklist UI",
         "Responsive Hamburger Menu",
         "Sliding Testimonial Carousel",
@@ -190,6 +190,45 @@ function renderNodes() {
     }
 
     updateZoomButtonStates();
+    setupDragAndDrop();
+}
+
+function setupDragAndDrop() {
+    const nodes = document.querySelectorAll('.node-container');
+    nodes.forEach(node => {
+        const uploadArea = node.querySelector('.node-image-container');
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', handleDragOver);
+            uploadArea.addEventListener('dragleave', handleDragLeave);
+            uploadArea.addEventListener('drop', handleDrop);
+        }
+    });
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        const day = e.currentTarget.closest('.node-container').querySelector('h2').textContent.match(/\d+/)[0];
+        handleImageUpload({ target: { files: [file] } }, day);
+        document.querySelector('.complete-task-button').disabled = false;
+    }
 }
 
 function handleImageUpload(event, day) {
@@ -216,12 +255,13 @@ function handleImageUpload(event, day) {
 
 function completeTask() {
     console.log("Complete task called");
-    const uploadedImage = localStorage.getItem(`day${currentDay}Image`);
-    if (!uploadedImage) {
+    const currentNodeImage = document.querySelector('.node-image-container img');
+    if (!currentNodeImage) {
         alert("Please upload an image before marking the task as complete.");
         return;
     }
     if (currentDay < tasks.length) {
+        localStorage.setItem(`day${currentDay}Image`, currentNodeImage.src);
         currentDay++;
         localStorage.setItem('currentDay', currentDay);
         renderNodes();
@@ -309,16 +349,11 @@ function arrangeNodesInGrid() {
     challengeContainer.innerHTML = '';
     nodes.forEach((node, index) => {
         const dayNumber = parseInt(node.querySelector('h2').textContent.match(/\d+/)[0]);
-        let row, col;
+        let row = Math.floor((dayNumber - 1) / 5);
+        let col = (dayNumber - 1) % 5;
         
-        row = Math.floor((dayNumber - 1) / 5);
-        
-        if (row % 2 === 0) {
-            // Even rows (including row 0) - left to right
-            col = (dayNumber - 1) % 5;
-        } else {
-            // Odd rows - right to left
-            col = 4 - ((dayNumber - 1) % 5);
+        if (row % 2 !== 0) {
+            col = 4 - col; // Reverse order for odd rows
         }
         
         node.style.setProperty('--node-row', 20 - row);
