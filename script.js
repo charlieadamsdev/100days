@@ -305,8 +305,17 @@ function arrangeNodesVertically() {
 function arrangeNodesInGrid() {
     console.log('Arranging nodes in grid');
     const nodes = Array.from(challengeContainer.querySelectorAll('.node-container'));
+    
     challengeContainer.innerHTML = '';
-    nodes.forEach(node => challengeContainer.appendChild(node));
+    nodes.forEach((node, index) => {
+        const dayNumber = parseInt(node.querySelector('h2').textContent.match(/\d+/)[0]);
+        const row = Math.floor((dayNumber - 1) / 5) + 1;
+        const col = ((dayNumber - 1) % 5) + 1;
+        
+        node.style.setProperty('--node-row', 21 - row); // 21 because we want to start from the bottom
+        node.style.setProperty('--node-col', col);
+        challengeContainer.appendChild(node);
+    });
 }
 
 function setupEventListeners() {

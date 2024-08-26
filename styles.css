@@ -177,6 +177,7 @@ body {
 .challenge-container.zoomed-out {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(20, 1fr);
     gap: 20px;
     padding: 20px;
     position: relative;
@@ -187,27 +188,14 @@ body {
     margin-bottom: 0;
 }
 
-.zoomed-out .node-container::before {
-    content: '';
-    position: absolute;
-    background-color: #333;
-    z-index: 1;
+.zoomed-out .node-container:nth-child(n) {
+    grid-row: var(--node-row);
+    grid-column: var(--node-col);
 }
 
-/* Horizontal lines */
-.zoomed-out .node-container:not(:nth-child(5n))::before {
-    width: calc(100% + 20px);
-    height: 1px;
-    top: 50%;
-    left: 100%;
-}
-
-/* Vertical lines only for last node in a row */
-.zoomed-out .node-container:nth-child(5n):not(:nth-child(5n-4))::before {
-    width: 1px;
-    height: calc(100% + 20px);
-    top: 50%;
-    left: 50%;
+.zoomed-out .node-container::before,
+.zoomed-out .node-container::after {
+    display: none;
 }
 
 .zoomed-out .node {
