@@ -309,11 +309,20 @@ function arrangeNodesInGrid() {
     challengeContainer.innerHTML = '';
     nodes.forEach((node, index) => {
         const dayNumber = parseInt(node.querySelector('h2').textContent.match(/\d+/)[0]);
-        const row = Math.floor((dayNumber - 1) / 5) + 1;
-        const col = ((dayNumber - 1) % 5) + 1;
+        let row, col;
         
-        node.style.setProperty('--node-row', 21 - row); // 21 because we want to start from the bottom
-        node.style.setProperty('--node-col', col);
+        row = Math.floor((dayNumber - 1) / 5);
+        
+        if (row % 2 === 0) {
+            // Even rows (including row 0) - left to right
+            col = (dayNumber - 1) % 5;
+        } else {
+            // Odd rows - right to left
+            col = 4 - ((dayNumber - 1) % 5);
+        }
+        
+        node.style.setProperty('--node-row', 20 - row);
+        node.style.setProperty('--node-col', col + 1);
         challengeContainer.appendChild(node);
     });
 }
