@@ -159,7 +159,49 @@ body {
 }
 
 .zoomed-out .connecting-line {
-    height: 30px;
+    display: none;
+}
+
+.zoomed-out .connecting-line.horizontal {
+    position: absolute;
+    display: block;
+    height: 2px;
+    width: calc(100% + 20px);
+    background-color: #333;
+    top: 50%;
+    left: 100%;
+    z-index: 1;
+}
+
+.zoomed-out .node-container:nth-child(5n) .connecting-line.horizontal {
+    display: none;
+}
+
+.zoomed-out .node-container {
+    position: relative;
+    margin: 0;
+}
+
+.zoomed-out .node-container:nth-child(n) {
+    grid-row: var(--node-row);
+    grid-column: var(--node-col);
+}
+
+.zoomed-out .node-container::before,
+.zoomed-out .node-container::after {
+    display: none;
+}
+
+.zoomed-out .node {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
 }
 
 .zoom-controls button {
@@ -178,16 +220,17 @@ body {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-auto-rows: minmax(min-content, max-content);
-    gap: 10px;
-    padding: 10px;
+    gap: 40px;
+    padding: 20px;
     position: relative;
-    height: calc(100vh - 20px);
-    align-items: end;
+    height: calc(100vh - 40px);
+    align-items: center;
+    justify-content: center;
 }
 
 .zoomed-out .node-container {
     position: relative;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 .zoomed-out .node-container:nth-child(n) {
@@ -203,4 +246,11 @@ body {
 .zoomed-out .node {
     position: relative;
     z-index: 2;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
 }

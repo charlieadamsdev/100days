@@ -323,6 +323,7 @@ function arrangeNodesInGrid() {
         
         node.style.setProperty('--node-row', 20 - row);
         node.style.setProperty('--node-col', col + 1);
+        
         challengeContainer.appendChild(node);
     });
 }
