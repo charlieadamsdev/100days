@@ -23,9 +23,13 @@ function handleLogin(event) {
     const email = document.querySelector('input[type="email"]').value;
     const password = document.querySelector('input[type="password"]').value;
 
-    // Here you would typically send a request to your server to authenticate
-    // For now, we'll use a simple check
-    if (email === 'user@example.com' && password === 'password') {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    if (userData && userData.email === email && userData.password === password) {
+        localStorage.setItem('isLoggedIn', 'true');
+        window.location.href = 'index.html';
+    } else if (email === 'user@example.com' && password === 'password') {
+        // Keep the test user for development purposes
         localStorage.setItem('isLoggedIn', 'true');
         window.location.href = 'index.html';
     } else {
