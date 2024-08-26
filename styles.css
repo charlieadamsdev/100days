@@ -179,12 +179,38 @@ body {
     grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     padding: 20px;
+    position: relative;
 }
 
 .zoomed-out .node-container {
+    position: relative;
     margin-bottom: 0;
 }
 
-.zoomed-out .connecting-line {
-    display: none;
+.zoomed-out .node-container::before {
+    content: '';
+    position: absolute;
+    background-color: #333;
+    z-index: 1;
+}
+
+/* Horizontal lines */
+.zoomed-out .node-container:not(:nth-child(5n))::before {
+    width: calc(100% + 20px);
+    height: 1px;
+    top: 50%;
+    left: 100%;
+}
+
+/* Vertical lines only for last node in a row */
+.zoomed-out .node-container:nth-child(5n):not(:nth-child(5n-4))::before {
+    width: 1px;
+    height: calc(100% + 20px);
+    top: 50%;
+    left: 50%;
+}
+
+.zoomed-out .node {
+    position: relative;
+    z-index: 2;
 }
