@@ -105,224 +105,262 @@ const tasks = [
         "Interactive Chatbot UI"
     ];
 
-    function renderNodes() {
-        console.log("renderNodes called");
-        const nodeContainer = document.querySelector('.challenge-container');
-        if (!nodeContainer) {
-            console.error("Challenge container not found");
-            return;
-        }
-        nodeContainer.innerHTML = ''; // Clear the container
-    
-        function createNodeElement(day, content) {
-            const nodeContainer = document.createElement('div');
-            nodeContainer.classList.add('node-container');
+const challengeContainer = document.querySelector('.challenge-container');
 
-            const node = document.createElement('div');
-            node.classList.add('node');
+function renderNodes() {
+    console.log("renderNodes called");
+    const nodeContainer = document.querySelector('.challenge-container');
+    if (!nodeContainer) {
+        console.error("Challenge container not found");
+        return;
+    }
+    nodeContainer.innerHTML = ''; // Clear the container
+    
+    function createNodeElement(day, content) {
+        const nodeContainer = document.createElement('div');
+        nodeContainer.classList.add('node-container');
+
+        const node = document.createElement('div');
+        node.classList.add('node');
+        if (day === currentDay) {
+            node.classList.add('current');
+        }
+        
+        node.innerHTML = `
+            <h2>Day ${day.toString().padStart(3, '0')}</h2>
+            <p>${content.task}</p>
+        `;
+
+        if (day === currentDay || (day < currentDay && content.image)) {
+            const imageContainer = document.createElement('div');
+            imageContainer.classList.add('node-image-container');
+            
             if (day === currentDay) {
-                node.classList.add('current');
+                imageContainer.innerHTML = `
+                    <label for="file-input-${day}">
+                        <img src="upload-icon.png" alt="Upload" style="width: 64px; height: 64px; cursor: pointer;"/>
+                    </label>
+                    <input id="file-input-${day}" type="file" accept="image/*" onchange="handleImageUpload(event, ${day})" style="display: none;"/>
+                `;
+            } else if (content.image) {
+                imageContainer.innerHTML = `<img src="${content.image}" alt="Day ${day} task">`;
             }
             
-            node.innerHTML = `
-                <h2>Day ${day.toString().padStart(3, '0')}</h2>
-                <p>${content.task}</p>
-            `;
+            node.appendChild(imageContainer);
+        }
 
-            if (day === currentDay || (day < currentDay && content.image)) {
-                const imageContainer = document.createElement('div');
-                imageContainer.classList.add('node-image-container');
-                
-                if (day === currentDay) {
-                    imageContainer.innerHTML = `
-                        <label for="file-input-${day}">
-                            <img src="upload-icon.png" alt="Upload" style="width: 64px; height: 64px; cursor: pointer;"/>
-                        </label>
-                        <input id="file-input-${day}" type="file" accept="image/*" onchange="handleImageUpload(event, ${day})" style="display: none;"/>
-                    `;
-                } else if (content.image) {
-                    imageContainer.innerHTML = `<img src="${content.image}" alt="Day ${day} task">`;
-                }
-                
-                node.appendChild(imageContainer);
+        if (day === currentDay) {
+            const button = document.createElement('button');
+            button.classList.add('complete-task-button');
+            button.innerHTML = '✓';
+            button.onclick = completeTask;
+            button.disabled = !content.image;
+            node.appendChild(button);
+        }
+
+        const line = document.createElement('div');
+        line.classList.add('connecting-line');
+
+        nodeContainer.appendChild(node);
+        nodeContainer.appendChild(line);
+
+        return nodeContainer;
+    }
+    
+    if (currentDay <= tasks.length) {
+        const currentNodeContent = {
+            task: tasks[currentDay - 1],
+            image: localStorage.getItem(`day${currentDay}Image`)
+        };
+        nodeContainer.appendChild(createNodeElement(currentDay, currentNodeContent));
+    }
+    
+    for (let i = currentDay - 1; i > 0; i--) {
+        const completedNodeContent = {
+            task: tasks[i - 1],
+            image: localStorage.getItem(`day${i}Image`)
+        };
+        nodeContainer.appendChild(createNodeElement(i, completedNodeContent));
+    }
+    
+    const lastNode = nodeContainer.lastElementChild;
+    if (lastNode) {
+        const lastLine = lastNode.querySelector('.connecting-line');
+        if (lastLine) lastLine.remove();
+    }
+
+    updateZoomButtonStates();
+}
+
+function handleImageUpload(event, day) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            localStorage.setItem(`day${day}Image`, e.target.result);
+            document.querySelector('.complete-task-button').disabled = false;
+            
+            let img = document.querySelector('.node img');
+            if (!img) {
+                img = document.createElement('img');
+                document.querySelector('.node').appendChild(img);
             }
+            img.src = e.target.result;
+            img.alt = `Day ${day} completed task`;
+            
+            console.log('Image uploaded for day', day);
+        }
+        reader.readAsDataURL(file);
+    }
+}
 
-            if (day === currentDay) {
-                const button = document.createElement('button');
-                button.classList.add('complete-task-button');
-                button.innerHTML = '✓';
-                button.onclick = completeTask;
-                button.disabled = !content.image;
-                node.appendChild(button);
-            }
+function completeTask() {
+    console.log("Complete task called");
+    const uploadedImage = localStorage.getItem(`day${currentDay}Image`);
+    if (!uploadedImage) {
+        alert("Please upload an image before marking the task as complete.");
+        return;
+    }
+    if (currentDay < tasks.length) {
+        currentDay++;
+        localStorage.setItem('currentDay', currentDay);
+        renderNodes();
+    } else {
+        console.log("Challenge completed!");
+    }
+}
 
+function restartChallenge() {
+    console.log("Restart challenge called");
+    currentDay = 1;
+    localStorage.clear();
+    renderNodes();
+}
+
+function updateProgressBar() {
+    const progress = (currentDay - 1) / tasks.length * 100;
+    const progressBar = document.querySelector('.progress-bar') || document.createElement('div');
+    progressBar.className = 'progress-bar';
+    progressBar.style.width = `${progress}%`;
+    progressBar.textContent = `${Math.round(progress)}%`;
+    document.body.insertBefore(progressBar, document.body.firstChild);
+}
+
+//test
+
+function shareProgress() {
+    const text = `I'm on Day ${currentDay} of my 100-day design challenge! 🎨✨`;
+    if (navigator.share) {
+        navigator.share({text: text})
+            .then(() => console.log('Shared successfully'))
+            .catch((error) => console.log('Error sharing', error));
+    } else {
+        prompt('Copy this text to share:', text);
+    }
+}
+
+let isZoomedOut = false;
+
+const zoomInBtn = document.getElementById('zoom-in');
+const zoomOutBtn = document.getElementById('zoom-out');
+
+function zoomIn() {
+    console.log('Zooming in');
+    isZoomedOut = false;
+    challengeContainer.classList.remove('zoomed-out');
+    challengeContainer.classList.add('zoomed-in');
+    arrangeNodesVertically();
+    updateZoomButtonStates();
+}
+
+function zoomOut() {
+    console.log('Zooming out');
+    isZoomedOut = true;
+    challengeContainer.classList.remove('zoomed-in');
+    challengeContainer.classList.add('zoomed-out');
+    arrangeNodesInGrid();
+    updateZoomButtonStates();
+}
+
+function arrangeNodesVertically() {
+    console.log('Arranging nodes vertically');
+    const nodes = Array.from(challengeContainer.querySelectorAll('.node-container'));
+    nodes.sort((a, b) => {
+        const dayA = parseInt(a.querySelector('h2').textContent.match(/\d+/)[0]);
+        const dayB = parseInt(b.querySelector('h2').textContent.match(/\d+/)[0]);
+        return dayB - dayA;
+    });
+    
+    challengeContainer.innerHTML = '';
+    nodes.forEach((node, index) => {
+        challengeContainer.appendChild(node);
+        if (index < nodes.length - 1) {
             const line = document.createElement('div');
             line.classList.add('connecting-line');
-
-            nodeContainer.appendChild(node);
-            nodeContainer.appendChild(line);
-
-            return nodeContainer;
+            challengeContainer.appendChild(line);
         }
-    
-        if (currentDay <= tasks.length) {
-            const currentNodeContent = {
-                task: tasks[currentDay - 1],
-                image: localStorage.getItem(`day${currentDay}Image`)
-            };
-            nodeContainer.appendChild(createNodeElement(currentDay, currentNodeContent));
-        }
-    
-        for (let i = currentDay - 1; i > 0; i--) {
-            const completedNodeContent = {
-                task: tasks[i - 1],
-                image: localStorage.getItem(`day${i}Image`)
-            };
-            nodeContainer.appendChild(createNodeElement(i, completedNodeContent));
-        }
-    
-        const lastNode = nodeContainer.lastElementChild;
-        if (lastNode) {
-            const lastLine = lastNode.querySelector('.connecting-line');
-            if (lastLine) lastLine.remove();
-        }
+    });
+}
 
-        updateZoomButtonStates();
-    }
-    
-    function handleImageUpload(event, day) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                localStorage.setItem(`day${day}Image`, e.target.result);
-                document.querySelector('.complete-task-button').disabled = false;
-                
-                let img = document.querySelector('.node img');
-                if (!img) {
-                    img = document.createElement('img');
-                    document.querySelector('.node').appendChild(img);
-                }
-                img.src = e.target.result;
-                img.alt = `Day ${day} completed task`;
-                
-                console.log('Image uploaded for day', day);
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-    
-    function completeTask() {
-        console.log("Complete task called");
-        const uploadedImage = localStorage.getItem(`day${currentDay}Image`);
-        if (!uploadedImage) {
-            alert("Please upload an image before marking the task as complete.");
-            return;
-        }
-        if (currentDay < tasks.length) {
-            currentDay++;
-            localStorage.setItem('currentDay', currentDay);
-            renderNodes();
-        } else {
-            console.log("Challenge completed!");
-        }
-    }
-    
-    function restartChallenge() {
-        console.log("Restart challenge called");
-        currentDay = 1;
-        localStorage.clear();
-        renderNodes();
-    }
-    
-    function updateProgressBar() {
-        const progress = (currentDay - 1) / tasks.length * 100;
-        const progressBar = document.querySelector('.progress-bar') || document.createElement('div');
-        progressBar.className = 'progress-bar';
-        progressBar.style.width = `${progress}%`;
-        progressBar.textContent = `${Math.round(progress)}%`;
-        document.body.insertBefore(progressBar, document.body.firstChild);
-    }
+function arrangeNodesInGrid() {
+    console.log('Arranging nodes in grid');
+    const nodes = Array.from(challengeContainer.querySelectorAll('.node-container'));
+    challengeContainer.innerHTML = '';
+    nodes.forEach(node => challengeContainer.appendChild(node));
+}
 
-
-    //test
-    
-    function shareProgress() {
-        const text = `I'm on Day ${currentDay} of my 100-day design challenge! 🎨✨`;
-        if (navigator.share) {
-            navigator.share({text: text})
-                .then(() => console.log('Shared successfully'))
-                .catch((error) => console.log('Error sharing', error));
-        } else {
-            prompt('Copy this text to share:', text);
-        }
-    }
-    
-    let isZoomedOut = false;
-
-    function toggleZoom() {
-        const container = document.querySelector('.challenge-container');
-        isZoomedOut = !isZoomedOut;
-        if (isZoomedOut) {
-            container.classList.add('zoomed-out');
-        } else {
-            container.classList.remove('zoomed-out');
-        }
-    }
-
-    function updateZoomButtonStates() {
-        document.getElementById('zoom-in').disabled = !isZoomedOut;
-        document.getElementById('zoom-out').disabled = isZoomedOut;
-    }
-
-    window.onload = function() {
-        console.log("Window loaded");
-        currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
-        renderNodes();
-        updateProgressBar();
-    };
-
+function setupEventListeners() {
     const zoomInBtn = document.getElementById('zoom-in');
     const zoomOutBtn = document.getElementById('zoom-out');
-    const challengeContainer = document.querySelector('.challenge-container');
-
-    function zoomIn() {
-        challengeContainer.classList.remove('zoomed-out');
-        arrangeNodesVertically();
-    }
-
-    function zoomOut() {
-        challengeContainer.classList.add('zoomed-out');
-        arrangeNodesInGrid();
-    }
-
-    function arrangeNodesVertically() {
-        const nodes = Array.from(challengeContainer.querySelectorAll('.node-container'));
-        nodes.sort((a, b) => {
-            const dayA = parseInt(a.querySelector('h2').textContent.match(/\d+/)[0]);
-            const dayB = parseInt(b.querySelector('h2').textContent.match(/\d+/)[0]);
-            return dayB - dayA;
-        });
     
-        challengeContainer.innerHTML = '';
-        nodes.forEach((node, index) => {
-            challengeContainer.appendChild(node);
-            if (index < nodes.length - 1) {
-                const line = document.createElement('div');
-                line.classList.add('connecting-line');
-                challengeContainer.appendChild(line);
-            }
-        });
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', zoomIn);
+        console.log('Zoom-in event listener added');
+    } else {
+        console.error('Zoom-in button not found');
     }
-
-    function arrangeNodesInGrid() {
-        const nodes = Array.from(challengeContainer.querySelectorAll('.node-container'));
-        challengeContainer.innerHTML = '';
-        nodes.forEach(node => challengeContainer.appendChild(node));
+    
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', zoomOut);
+        console.log('Zoom-out event listener added');
+    } else {
+        console.error('Zoom-out button not found');
     }
+}
 
-    zoomInBtn.addEventListener('click', zoomIn);
-    zoomOutBtn.addEventListener('click', zoomOut);
+document.addEventListener('DOMContentLoaded', setupEventListeners);
 
-    // Initial setup
-    arrangeNodesVertically();
+// Initial setup
+console.log('Initial setup');
+arrangeNodesVertically();
+challengeContainer.classList.add('zoomed-in');
+
+function toggleZoom() {
+    const container = document.querySelector('.challenge-container');
+    isZoomedOut = !isZoomedOut;
+    if (isZoomedOut) {
+        container.classList.add('zoomed-out');
+    } else {
+        container.classList.remove('zoomed-out');
+    }
+}
+
+function updateZoomButtonStates() {
+    zoomInBtn.disabled = !isZoomedOut;
+    zoomOutBtn.disabled = isZoomedOut;
+}
+
+window.onload = function() {
+    console.log("Window loaded");
+    currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
+    if (challengeContainer) {
+        renderNodes();
+        updateProgressBar();
+        arrangeNodesVertically();
+        challengeContainer.classList.add('zoomed-in');
+        isZoomedOut = false;
+        updateZoomButtonStates();
+    } else {
+        console.error("Challenge container not found on load");
+    }
+};
