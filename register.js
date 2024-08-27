@@ -1,8 +1,6 @@
 import { auth, db } from './firebase-config.js';
-import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
-import { setDoc, doc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
-
-console.log("Using Firebase auth and db in register.js:", auth, db);
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
+import { setDoc, doc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');

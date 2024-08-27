@@ -12,14 +12,12 @@
             <!-- Nodes will be dynamically added here -->
         </div>
     </div>
-    <div class="zoom-controls">
-        <button id="zoom-out">-</button>
-        <button id="zoom-in">+</button>
-    </div>
-    <button class="restart-button" onclick="restartChallenge()">Restart Challenge</button>
-    <button onclick="shareProgress()">Share Progress</button>
+    <button id="zoom-out">-</button>
+    <button id="zoom-in">+</button>
     <button onclick="logout()">Logout</button>
-    <script type="module" src="upload.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="app.js"></script>
     <script type="module" src="script.js"></script>
