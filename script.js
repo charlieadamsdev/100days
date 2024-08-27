@@ -2,6 +2,7 @@ import { db, auth } from './firebase-config.js';
 import { collection, addDoc, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { uploadImage } from './upload.js';
+import { storage } from './firebase-config.js';
 
 let challengeContainer = null;
 let currentDay = 1;
@@ -180,12 +181,17 @@ function handleFileSelect(event, day) {
 
 async function handleImageUpload(file, day) {
     try {
+        console.log('Uploading file:', file.name, 'Size:', file.size);
+        if (!storage) {
+            throw new Error('Firebase Storage is not initialized');
+        }
         const imageUrl = await uploadImage(file);
+        console.log('Upload successful, URL:', imageUrl);
         const imgContainer = document.getElementById(`image-container-${day}`);
         imgContainer.innerHTML = `<img src="${imageUrl}" alt="Uploaded design">`;
         // Here you would typically update the challenge data in your database
     } catch (error) {
         console.error('Error uploading image:', error);
-        alert('Failed to upload image. Please try again.');
+        alert(`Failed to upload image: ${error.message}`);
     }
 }
