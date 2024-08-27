@@ -1,38 +1,37 @@
-window.onload = function() {
-    console.log("Window loaded");
-    currentDay = parseInt(localStorage.getItem('currentDay')) || 1;
-    if (challengeContainer) {
-        renderNodes();
-        updateProgressBar();
-        arrangeNodesVertically();
-        challengeContainer.classList.add('zoomed-in');
-        isZoomedOut = false;
-        updateZoomButtonStates();
-    } else {
-        console.error("Challenge container not found on load");
-    }
-};
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
+import { firebaseConfig } from './firebase-config.js';
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+console.log("Firebase app in login.js:", app);
+console.log("Firebase auth in login.js:", auth);
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.querySelector('form');
+    const loginForm = document.getElementById('login-form');
     loginForm.addEventListener('submit', handleLogin);
 });
 
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
     const email = document.querySelector('input[type="email"]').value;
     const password = document.querySelector('input[type="password"]').value;
 
-    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (!email || !password) {
+        alert('Please enter both email and password');
+        return;
+    }
 
-    if (userData && userData.email === email && userData.password === password) {
+    try {
+        console.log('Attempting to sign in...');
+        console.log('Auth object before sign in:', auth);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log('Sign-in successful:', userCredential);
         localStorage.setItem('isLoggedIn', 'true');
         window.location.href = 'index.html';
-    } else if (email === 'user@example.com' && password === 'password') {
-        // Keep the test user for development purposes
-        localStorage.setItem('isLoggedIn', 'true');
-        window.location.href = 'index.html';
-    } else {
-        alert('Invalid credentials');
+    } catch (error) {
+        console.error('Login error:', error.code, error.message);
+        alert('Invalid credentials: ' + error.message);
     }
 }

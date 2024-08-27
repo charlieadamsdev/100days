@@ -279,13 +279,6 @@ body {
     justify-content: center;
 }
 
-.login-image {
-    flex: 1;
-    background-image: url('path-to-your-image.jpg');
-    background-size: cover;
-    background-position: center;
-}
-
 .logo {
     width: 100px;
     margin-bottom: 20px;

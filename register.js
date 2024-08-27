@@ -1,9 +1,15 @@
+import { auth, db } from './firebase-config.js';
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+import { setDoc, doc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+
+console.log("Using Firebase auth and db in register.js:", auth, db);
+
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
     registerForm.addEventListener('submit', handleRegister);
 });
 
-function handleRegister(event) {
+async function handleRegister(event) {
     event.preventDefault();
     const username = document.querySelector('input[type="text"]').value;
     const email = document.querySelector('input[type="email"]').value;
@@ -15,10 +21,15 @@ function handleRegister(event) {
         return;
     }
 
-    // Here you would typically send a request to your server to register the user
-    // For now, we'll just store the user data in localStorage
-    const userData = { username, email, password };
-    localStorage.setItem('userData', JSON.stringify(userData));
-    alert("Registration successful! Please log in.");
-    window.location.href = 'login.html';
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, 'users', userCredential.user.uid), {
+            username: username,
+            email: email
+        });
+        alert("Registration successful! Please log in.");
+        window.location.href = 'login.html';
+    } catch (error) {
+        alert("Registration failed: " + error.message);
+    }
 }
