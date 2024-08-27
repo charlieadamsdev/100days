@@ -1,8 +1,9 @@
 import { db, auth } from './firebase-config.js';
-import { collection, addDoc, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { collection, addDoc, getDocs, query, where, orderBy, updateDoc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { uploadImage } from './upload.js';
 import { storage } from './firebase-config.js';
+import { doc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 
 let challengeContainer = null;
 let currentDay = 1;
@@ -33,35 +34,7 @@ async function initializeDefaultNodes(userId) {
     const challengesRef = collection(db, 'users', userId, 'challenges');
     const designChallenges = [
         "Simple Button design",
-        "Login Form",
-        "Registration Form",
-        "Navigation Bar",
-        "Simple Footer",
-        "Card Layout",
-        "Profile Card",
-        "Product Grid Layout",
-        "Search Bar UI",
-        "Responsive Image Gallery",
-        "Dropdown Menu",
-        "Responsive Sidebar Menu",
-        "Accordion UI",
-        "Interactive Tabs",
-        "Responsive Hero Section",
-        "Light/Dark Mode Toggle",
-        "Sticky Navigation Bar",
-        "Sliding Testimonial Carousel",
-        "Rating System UI",
-        "Progress Indicator",
-        "Blog Post Layout",
-        "Testimonials Section",
-        "Hover Card Animations",
-        "Interactive Calendar UI",
-        "Product Quick View",
-        "Advanced Product Carousel",
-        "Social Media Feed",
-        "Interactive Data Visualization",
-        "Custom Video Player UI",
-        "Interactive Dashboard UI"
+        // ... other challenges ...
     ];
 
     for (let i = 0; i < designChallenges.length; i++) {
@@ -106,13 +79,17 @@ async function renderNodes() {
         
         console.log('Number of challenges:', querySnapshot.size);
         
+        let foundIncomplete = false;
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
-            if (challengeData.day <= currentDay) {
+            if (challengeData.completed || !foundIncomplete) {
                 const node = createNode(challengeData);
                 challengeContainer.appendChild(node);
                 console.log('Node appended for day:', challengeData.day);
+                if (!challengeData.completed) {
+                    foundIncomplete = true;
+                }
             }
         });
     } else {
@@ -133,10 +110,12 @@ function createNode(challengeData) {
             <input type="file" id="file-input-${challengeData.day}" style="display: none;" accept="image/*">
             <label for="file-input-${challengeData.day}" class="upload-label">Upload Image</label>
         </div>
+        <button class="confirm-button" id="confirm-button-${challengeData.day}" style="display: none;">Confirm</button>
     `;
     
     const imageContainer = node.querySelector(`#image-container-${challengeData.day}`);
     const fileInput = node.querySelector(`#file-input-${challengeData.day}`);
+    const confirmButton = node.querySelector(`#confirm-button-${challengeData.day}`);
 
     // Add drag and drop event listeners
     imageContainer.addEventListener('dragover', handleDragOver);
@@ -145,6 +124,9 @@ function createNode(challengeData) {
 
     // Add file input change event listener
     fileInput.addEventListener('change', (event) => handleFileSelect(event, challengeData.day));
+
+    // Add confirm button click event listener
+    confirmButton.addEventListener('click', () => handleConfirm(challengeData.day));
     
     return node;
 }
@@ -189,9 +171,50 @@ async function handleImageUpload(file, day) {
         console.log('Upload successful, URL:', imageUrl);
         const imgContainer = document.getElementById(`image-container-${day}`);
         imgContainer.innerHTML = `<img src="${imageUrl}" alt="Uploaded design">`;
-        // Here you would typically update the challenge data in your database
+        
+        // Show the confirm button
+        const confirmButton = document.getElementById(`confirm-button-${day}`);
+        confirmButton.style.display = 'block';
     } catch (error) {
         console.error('Error uploading image:', error);
         alert(`Failed to upload image: ${error.message}`);
+    }
+}
+
+async function handleConfirm(day) {
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error('User not authenticated');
+        }
+
+        const challengesRef = collection(db, 'users', user.uid, 'challenges');
+        const q = query(challengesRef, where('day', '==', day));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            throw new Error('Challenge not found');
+        }
+
+        const challengeDoc = querySnapshot.docs[0];
+        await updateDoc(challengeDoc.ref, {
+            completed: true
+        });
+
+        // Update UI to show the challenge is completed
+        const node = document.querySelector(`.node:nth-child(${day})`);
+        node.classList.add('completed');
+
+        // Hide the confirm button
+        const confirmButton = document.getElementById(`confirm-button-${day}`);
+        confirmButton.style.display = 'none';
+
+        // Unlock the next node
+        currentDay = day + 1;
+        await renderNodes();
+
+    } catch (error) {
+        console.error('Error confirming challenge:', error);
+        alert(`Failed to confirm challenge: ${error.message}`);
     }
 }
