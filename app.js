@@ -4,7 +4,10 @@ import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/
 onAuthStateChanged(auth, function(user) {
     if (user) {
         console.log("User is signed in:", user.uid);
-        document.querySelector('.challenge-container')?.style.display = 'flex';
+        const challengeContainer = document.querySelector('.challenge-container');
+        if (challengeContainer) {
+            challengeContainer.style.display = 'flex';
+        }
     } else {
         console.log("No user signed in");
         if (!window.location.pathname.includes('login.html') && !window.location.pathname.includes('register.html')) {

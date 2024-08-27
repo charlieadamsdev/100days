@@ -1,3 +1,4 @@
+import { initializeDefaultNodes } from './script.js';
 import { auth, db } from './firebase-config.js';
 import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { setDoc, doc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
@@ -25,6 +26,7 @@ async function handleRegister(event) {
             username: username,
             email: email
         });
+        await initializeDefaultNodes(userCredential.user.uid);
         alert("Registration successful! Please log in.");
         window.location.href = 'login.html';
     } catch (error) {
