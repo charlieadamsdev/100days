@@ -15,7 +15,7 @@ body {
 
 .challenge-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
     padding: 20px;
     overflow-y: auto;
@@ -24,10 +24,11 @@ body {
 
 .node-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
     width: 100%;
 }
+
 
 .node {
     background-color: #1e1e1e;

@@ -79,18 +79,24 @@ async function renderNodes() {
         
         console.log('Number of challenges:', querySnapshot.size);
         
-        let foundIncomplete = false;
+        const nodes = [];
+        let lastCompletedDay = 0;
+        
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
-            if (challengeData.completed || !foundIncomplete) {
-                const node = createNode(challengeData);
-                challengeContainer.appendChild(node);
-                console.log('Node appended for day:', challengeData.day);
-                if (!challengeData.completed) {
-                    foundIncomplete = true;
-                }
+            if (challengeData.completed) {
+                lastCompletedDay = challengeData.day;
             }
+            if (challengeData.completed || challengeData.day === lastCompletedDay + 1) {
+                const node = createNode(challengeData);
+                nodes.push(node);
+                console.log('Node created for day:', challengeData.day);
+            }
+        });
+        
+        nodes.forEach(node => {
+            challengeContainer.appendChild(node);
         });
     } else {
         console.error('User not authenticated');
@@ -102,6 +108,9 @@ function createNode(challengeData) {
     node.classList.add('node');
     if (challengeData.completed) {
         node.classList.add('completed');
+    }
+    if (!challengeData.completed) {
+        node.classList.add('current');
     }
     node.innerHTML = `
         <h2>Day ${challengeData.day}</h2>
