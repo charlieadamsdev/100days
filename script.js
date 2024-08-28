@@ -57,8 +57,8 @@ async function loadChallenges() {
             await initializeDefaultNodes(user.uid);
             currentDay = 1;
         } else {
-            const completedChallenges = querySnapshot.docs.filter(doc => doc.data().completed);
-            currentDay = completedChallenges.length + 1;
+            const challenges = querySnapshot.docs.map(doc => doc.data());
+            currentDay = challenges.find(challenge => !challenge.completed)?.day || challenges.length + 1;
         }
     }
     console.log('Current day:', currentDay);
@@ -74,30 +74,19 @@ async function renderNodes() {
     const user = auth.currentUser;
     if (user) {
         const challengesRef = collection(db, 'users', user.uid, 'challenges');
-        const q = query(challengesRef, orderBy('day'));
+        const q = query(challengesRef, orderBy('day', 'desc'));  // Order by day in descending order
         const querySnapshot = await getDocs(q);
         
         console.log('Number of challenges:', querySnapshot.size);
         
-        const nodes = [];
-        let lastCompletedDay = 0;
-        
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
-            if (challengeData.completed) {
-                lastCompletedDay = challengeData.day;
-            }
-            if (challengeData.completed || challengeData.day === lastCompletedDay + 1) {
-                const node = createNode(challengeData);
-                nodes.push(node);
-                console.log('Node created for day:', challengeData.day);
-            }
-        });
-        
-        nodes.forEach(node => {
+            const node = createNode(challengeData);
             challengeContainer.appendChild(node);
         });
+
+        console.log('Nodes rendered:', challengeContainer.children.length);
     } else {
         console.error('User not authenticated');
     }
@@ -116,26 +105,31 @@ function createNode(challengeData) {
         <h2>Day ${challengeData.day}</h2>
         <p>${challengeData.description}</p>
         <div class="node-image-container" id="image-container-${challengeData.day}">
-            <input type="file" id="file-input-${challengeData.day}" style="display: none;" accept="image/*">
-            <label for="file-input-${challengeData.day}" class="upload-label">Upload Image</label>
+            ${challengeData.completed && challengeData.imageUrl ? 
+                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 250px; height: 250px; object-fit: cover;">` :
+                `<input type="file" id="file-input-${challengeData.day}" style="display: none;" accept="image/*">
+                 <label for="file-input-${challengeData.day}" class="upload-label">Upload Image</label>`
+            }
         </div>
-        <button class="confirm-button" id="confirm-button-${challengeData.day}" style="display: none;">Confirm</button>
+        ${!challengeData.completed ? `<button class="confirm-button" id="confirm-button-${challengeData.day}" style="display: none;">Confirm</button>` : ''}
     `;
     
-    const imageContainer = node.querySelector(`#image-container-${challengeData.day}`);
-    const fileInput = node.querySelector(`#file-input-${challengeData.day}`);
-    const confirmButton = node.querySelector(`#confirm-button-${challengeData.day}`);
+    if (!challengeData.completed) {
+        const imageContainer = node.querySelector(`#image-container-${challengeData.day}`);
+        const fileInput = node.querySelector(`#file-input-${challengeData.day}`);
+        const confirmButton = node.querySelector(`#confirm-button-${challengeData.day}`);
 
-    // Add drag and drop event listeners
-    imageContainer.addEventListener('dragover', handleDragOver);
-    imageContainer.addEventListener('dragleave', handleDragLeave);
-    imageContainer.addEventListener('drop', (event) => handleDrop(event, challengeData.day));
+        // Add drag and drop event listeners
+        imageContainer.addEventListener('dragover', handleDragOver);
+        imageContainer.addEventListener('dragleave', handleDragLeave);
+        imageContainer.addEventListener('drop', (event) => handleDrop(event, challengeData.day));
 
-    // Add file input change event listener
-    fileInput.addEventListener('change', (event) => handleFileSelect(event, challengeData.day));
+        // Add file input change event listener
+        fileInput.addEventListener('change', (event) => handleFileSelect(event, challengeData.day));
 
-    // Add confirm button click event listener
-    confirmButton.addEventListener('click', () => handleConfirm(challengeData.day));
+        // Add confirm button click event listener
+        confirmButton.addEventListener('click', () => handleConfirm(challengeData.day));
+    }
     
     return node;
 }
@@ -206,20 +200,28 @@ async function handleConfirm(day) {
         }
 
         const challengeDoc = querySnapshot.docs[0];
+        const imageContainer = document.getElementById(`image-container-${day}`);
+        const imageUrl = imageContainer.querySelector('img').src;
+
         await updateDoc(challengeDoc.ref, {
-            completed: true
+            completed: true,
+            imageUrl: imageUrl
         });
 
-        // Update UI to show the challenge is completed
-        const node = document.querySelector(`.node:nth-child(${day})`);
-        node.classList.add('completed');
+        console.log(`Challenge day ${day} marked as completed`);
 
-        // Hide the confirm button
-        const confirmButton = document.getElementById(`confirm-button-${day}`);
-        confirmButton.style.display = 'none';
+        // Create next day's challenge
+        const nextDay = day + 1;
+        await addDoc(challengesRef, {
+            day: nextDay,
+            description: `Day ${nextDay} Challenge`,
+            completed: false
+        });
 
-        // Unlock the next node
-        currentDay = day + 1;
+        console.log(`Created challenge for day ${nextDay}`);
+
+        // Reload challenges and render nodes
+        await loadChallenges();
         await renderNodes();
 
     } catch (error) {
