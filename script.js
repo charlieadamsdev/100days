@@ -74,16 +74,22 @@ async function renderNodes() {
     const user = auth.currentUser;
     if (user) {
         const challengesRef = collection(db, 'users', user.uid, 'challenges');
-        const q = query(challengesRef, orderBy('day', 'desc'));  // Order by day in descending order
+        const q = query(challengesRef, orderBy('day', 'asc'));  // Order by day in ascending order
         const querySnapshot = await getDocs(q);
         
         console.log('Number of challenges:', querySnapshot.size);
         
+        const nodes = [];
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
             const node = createNode(challengeData);
-            challengeContainer.appendChild(node);
+            nodes.push(node);
+        });
+
+        // Append nodes in reverse order
+        nodes.forEach(node => {
+            challengeContainer.insertBefore(node, challengeContainer.firstChild);
         });
 
         console.log('Nodes rendered:', challengeContainer.children.length);
