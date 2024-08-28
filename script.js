@@ -1,5 +1,5 @@
 import { db, auth } from './firebase-config.js';
-import { collection, addDoc, getDocs, query, where, orderBy, updateDoc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
+import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, limit } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js';
 import { uploadImage } from './upload.js';
 import { storage } from './firebase-config.js';
@@ -32,7 +32,10 @@ const designChallenges = [
     "Interactive Data Visualization",
     "Custom Video Player UI",
     "Interactive Dashboard UI",
-    "E-commerce Product Page"
+    "E-commerce Product Page",
+    "Animated Loading Spinner",
+    "Responsive Pricing Table",
+    "Interactive Chat Interface"
 ];
 
 let challengeContainer = null;
@@ -89,7 +92,10 @@ async function initializeDefaultNodes(userId) {
         "Interactive Data Visualization",
         "Custom Video Player UI",
         "Interactive Dashboard UI",
-        "E-commerce Product Page"
+        "E-commerce Product Page",
+        "Animated Loading Spinner",
+        "Responsive Pricing Table",
+        "Interactive Chat Interface"
     ];
 
     for (let i = 0; i < designChallenges.length; i++) {
@@ -120,6 +126,7 @@ async function loadChallenges() {
 }
 
 async function renderNodes() {
+    console.log('Starting renderNodes function');
     if (!challengeContainer) {
         console.error('Challenge container not found');
         return;
@@ -127,29 +134,41 @@ async function renderNodes() {
     challengeContainer.innerHTML = '';
     console.log('Rendering nodes...');
     const user = auth.currentUser;
+    console.log('Current user:', user);
     if (user) {
         const challengesRef = collection(db, 'users', user.uid, 'challenges');
-        const q = query(challengesRef, orderBy('day', 'asc'));  // Order by day in ascending order
+        const q = query(challengesRef, orderBy('day', 'asc'));
         const querySnapshot = await getDocs(q);
         
-        console.log('Number of challenges:', querySnapshot.size);
+        console.log('Query snapshot size:', querySnapshot.size);
         
         const nodes = [];
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
-            const node = createNode(challengeData);
-            nodes.push(node);
+            if (challengeData.completed || challengeData.day === currentDay) {
+                const node = createNode(challengeData);
+                nodes.push(node);
+            }
         });
 
-        // Append nodes in reverse order
+        console.log('Number of nodes created:', nodes.length);
+
+        // Sort nodes in descending order (latest day on top)
+        nodes.sort((a, b) => {
+            const dayA = parseInt(a.querySelector('h2').textContent.split(' ')[1]);
+            const dayB = parseInt(b.querySelector('h2').textContent.split(' ')[1]);
+            return dayB - dayA;
+        });
+
+        // Append nodes
         nodes.forEach(node => {
-            challengeContainer.insertBefore(node, challengeContainer.firstChild);
+            challengeContainer.appendChild(node);
         });
 
         console.log('Nodes rendered:', challengeContainer.children.length);
     } else {
-        console.error('User not authenticated');
+        console.error('User not authenticated in renderNodes');
     }
 }
 
@@ -167,12 +186,21 @@ function createNode(challengeData) {
         <p>${designChallenges[challengeData.day - 1] || challengeData.description}</p>
         <div class="node-image-container" id="image-container-${challengeData.day}">
             ${challengeData.completed && challengeData.imageUrl ? 
-                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 250px; height: 250px; object-fit: cover;">` :
+                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 200px; height: 200px; object-fit: cover;">` :
                 `<input type="file" id="file-input-${challengeData.day}" style="display: none;" accept="image/*">
-                 <label for="file-input-${challengeData.day}" class="upload-label">Upload Image</label>`
+                 <label for="file-input-${challengeData.day}" class="upload-label">
+                     <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                         <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>
+                     </svg>
+                 </label>`
             }
         </div>
-        ${!challengeData.completed ? `<button class="confirm-button" id="confirm-button-${challengeData.day}" style="display: none;">Confirm</button>` : ''}
+        ${!challengeData.completed ? `
+            <button class="confirm-button" id="confirm-button-${challengeData.day}" style="display: none;">
+                <svg class="confirm-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                </svg>
+            </button>` : ''}
     `;
     
     if (!challengeData.completed) {
@@ -234,11 +262,11 @@ async function handleImageUpload(file, day) {
         const imageUrl = await uploadImage(file);
         console.log('Upload successful, URL:', imageUrl);
         const imgContainer = document.getElementById(`image-container-${day}`);
-        imgContainer.innerHTML = `<img src="${imageUrl}" alt="Uploaded design">`;
+        imgContainer.innerHTML = `<img src="${imageUrl}" alt="Uploaded design" style="width: 200px; height: 200px; object-fit: cover;">`;
         
         // Show the confirm button
         const confirmButton = document.getElementById(`confirm-button-${day}`);
-        confirmButton.style.display = 'block';
+        confirmButton.style.display = 'flex';
     } catch (error) {
         console.error('Error uploading image:', error);
         alert(`Failed to upload image: ${error.message}`);
@@ -271,26 +299,26 @@ async function handleConfirm(day) {
 
         console.log(`Challenge day ${day} marked as completed`);
 
-        // Create next day's challenge
-        const nextDay = day + 1;
-        
-        if (nextDay <= designChallenges.length) {
-            await addDoc(challengesRef, {
-                day: nextDay,
-                description: designChallenges[nextDay - 1],
-                completed: false
-            });
-            console.log(`Created challenge for day ${nextDay}`);
-        } else {
-            console.log('All challenges completed');
-        }
+        // Find the next uncompleted day
+        const allChallengesQuery = query(challengesRef, orderBy('day', 'asc'));
+        const allChallengesSnapshot = await getDocs(allChallengesQuery);
+        currentDay = allChallengesSnapshot.docs.find(doc => !doc.data().completed)?.data().day || day + 1;
 
-        // Reload challenges and render nodes
-        await loadChallenges();
+        // Render nodes to show the updated state
         await renderNodes();
 
     } catch (error) {
         console.error('Error confirming challenge:', error);
         alert(`Failed to confirm challenge: ${error.message}`);
     }
+}
+
+function createPlaceholderNode(day) {
+    const node = document.createElement('div');
+    node.classList.add('node', 'placeholder');
+    node.innerHTML = `
+        <h2>Day ${day}</h2>
+        <p>Complete the current day to unlock</p>
+    `;
+    return node;
 }
