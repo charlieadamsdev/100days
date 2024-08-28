@@ -5,6 +5,36 @@ import { uploadImage } from './upload.js';
 import { storage } from './firebase-config.js';
 import { doc } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js';
 
+const designChallenges = [
+    "Simple Button design",
+    "Card Layout",  
+    "Profile Card",
+    "Product Grid Layout",
+    "Search Bar UI",
+    "Responsive Image Gallery",
+    "Dropdown Menu",
+    "Responsive Sidebar Menu",
+    "Accordion UI",
+    "Interactive Tabs",
+    "Responsive Hero Section",
+    "Light/Dark Mode Toggle",
+    "Sticky Navigation Bar",
+    "Sliding Testimonial Carousel",
+    "Rating System UI",
+    "Progress Indicator",
+    "Blog Post Layout",
+    "Testimonials Section",
+    "Hover Card Animations",
+    "Interactive Calendar UI",
+    "Product Quick View",
+    "Advanced Product Carousel",
+    "Social Media Feed",
+    "Interactive Data Visualization",
+    "Custom Video Player UI",
+    "Interactive Dashboard UI",
+    "E-commerce Product Page"
+];
+
 let challengeContainer = null;
 let currentDay = 1;
 
@@ -34,7 +64,32 @@ async function initializeDefaultNodes(userId) {
     const challengesRef = collection(db, 'users', userId, 'challenges');
     const designChallenges = [
         "Simple Button design",
-        // ... other challenges ...
+        "Card Layout",  
+        "Profile Card",
+        "Product Grid Layout",
+        "Search Bar UI",
+        "Responsive Image Gallery",
+        "Dropdown Menu",
+        "Responsive Sidebar Menu",
+        "Accordion UI",
+        "Interactive Tabs",
+        "Responsive Hero Section",
+        "Light/Dark Mode Toggle",
+        "Sticky Navigation Bar",
+        "Sliding Testimonial Carousel",
+        "Rating System UI",
+        "Progress Indicator",
+        "Blog Post Layout",
+        "Testimonials Section",
+        "Hover Card Animations",
+        "Interactive Calendar UI",
+        "Product Quick View",
+        "Advanced Product Carousel",
+        "Social Media Feed",
+        "Interactive Data Visualization",
+        "Custom Video Player UI",
+        "Interactive Dashboard UI",
+        "E-commerce Product Page"
     ];
 
     for (let i = 0; i < designChallenges.length; i++) {
@@ -109,7 +164,7 @@ function createNode(challengeData) {
     }
     node.innerHTML = `
         <h2>Day ${challengeData.day}</h2>
-        <p>${challengeData.description}</p>
+        <p>${designChallenges[challengeData.day - 1] || challengeData.description}</p>
         <div class="node-image-container" id="image-container-${challengeData.day}">
             ${challengeData.completed && challengeData.imageUrl ? 
                 `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 250px; height: 250px; object-fit: cover;">` :
@@ -218,13 +273,17 @@ async function handleConfirm(day) {
 
         // Create next day's challenge
         const nextDay = day + 1;
-        await addDoc(challengesRef, {
-            day: nextDay,
-            description: `Day ${nextDay} Challenge`,
-            completed: false
-        });
-
-        console.log(`Created challenge for day ${nextDay}`);
+        
+        if (nextDay <= designChallenges.length) {
+            await addDoc(challengesRef, {
+                day: nextDay,
+                description: designChallenges[nextDay - 1],
+                completed: false
+            });
+            console.log(`Created challenge for day ${nextDay}`);
+        } else {
+            console.log('All challenges completed');
+        }
 
         // Reload challenges and render nodes
         await loadChallenges();
