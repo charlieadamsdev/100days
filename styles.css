@@ -19,9 +19,7 @@ body {
     align-items: center;
     padding: 20px;
     overflow-y: auto;
-    max-height: calc(100vh - 80px);
-    width: 100%;
-    box-sizing: border-box;
+    max-height: calc(100vh - 40px);
 }
 
 .node-container {
@@ -32,19 +30,19 @@ body {
 }
 
 .node {
-    background-color: #2a2a2a;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 15px 0;
-    width: 300px;
+    background-color: #1e1e1e;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 30px 0;
+    width: 80%;
+    max-width: 500px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    min-height: 200px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
+    justify-content: center;
+    min-height: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .node.current {
@@ -53,28 +51,27 @@ body {
 }
 
 .node h2 {
-    font-size: 14px;
-    margin-bottom: 10px;
+    font-size: 24px;
+    margin-bottom: 15px;
     color: #888;
-    text-transform: uppercase;
 }
 
 .node p {
-    font-size: 16px;
-    margin-bottom: 15px;
+    font-size: 20px;
+    margin-bottom: 20px;
     color: #fff;
 }
 
 .node-image-container {
-    width: 100%;
-    height: 120px;
-    background-color: #1e1e1e;
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    background-color: #2a2a2a;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
+    border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 15px;
 }
 
 .node-image-container img {
@@ -109,9 +106,9 @@ body {
 }
 
 .connecting-line {
-    width: 2px;
-    height: 30px;
-    background-color: #444;
+    width: 3px;
+    height: 60px;
+    background-color: #333;
     margin: 0 auto;
 }
 
@@ -383,28 +380,4 @@ form input {
 
 .confirm-button:hover {
     background-color: #45a049;
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #1e1e1e;
-}
-
-.streak-counter {
-    font-size: 18px;
-    color: #4CAF50;
-}
-
-nav a {
-    color: #fff;
-    text-decoration: none;
-    margin-left: 20px;
-    font-size: 16px;
-}
-
-nav a.active {
-    color: #4CAF50;
 }

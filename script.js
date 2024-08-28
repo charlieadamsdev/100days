@@ -32,10 +32,7 @@ const designChallenges = [
     "Interactive Data Visualization",
     "Custom Video Player UI",
     "Interactive Dashboard UI",
-    "E-commerce Product Page",
-    "Animated Loading Spinner",
-    "Responsive Footer Design",
-    "404 Error Page Design"
+    "E-commerce Product Page"
 ];
 
 let challengeContainer = null;
@@ -95,7 +92,7 @@ async function initializeDefaultNodes(userId) {
         "E-commerce Product Page"
     ];
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < designChallenges.length; i++) {
         await addDoc(challengesRef, {
             day: i + 1,
             description: designChallenges[i],
@@ -141,7 +138,7 @@ async function renderNodes() {
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
-            const node = renderNode(challengeData);
+            const node = createNode(challengeData);
             nodes.push(node);
         });
 
@@ -156,15 +153,21 @@ async function renderNodes() {
     }
 }
 
-function renderNode(challengeData) {
+function createNode(challengeData) {
     const node = document.createElement('div');
-    node.className = `node ${challengeData.day === currentDay ? 'current' : ''}`;
+    node.classList.add('node');
+    if (challengeData.completed) {
+        node.classList.add('completed');
+    }
+    if (!challengeData.completed) {
+        node.classList.add('current');
+    }
     node.innerHTML = `
-        <h2>Day ${challengeData.day.toString().padStart(3, '0')}</h2>
+        <h2>Day ${challengeData.day}</h2>
         <p>${designChallenges[challengeData.day - 1] || challengeData.description}</p>
         <div class="node-image-container" id="image-container-${challengeData.day}">
             ${challengeData.completed && challengeData.imageUrl ? 
-                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design">` :
+                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 250px; height: 250px; object-fit: cover;">` :
                 `<input type="file" id="file-input-${challengeData.day}" style="display: none;" accept="image/*">
                  <label for="file-input-${challengeData.day}" class="upload-label">Upload Image</label>`
             }
@@ -177,26 +180,19 @@ function renderNode(challengeData) {
         const fileInput = node.querySelector(`#file-input-${challengeData.day}`);
         const confirmButton = node.querySelector(`#confirm-button-${challengeData.day}`);
 
+        // Add drag and drop event listeners
         imageContainer.addEventListener('dragover', handleDragOver);
         imageContainer.addEventListener('dragleave', handleDragLeave);
         imageContainer.addEventListener('drop', (event) => handleDrop(event, challengeData.day));
 
+        // Add file input change event listener
         fileInput.addEventListener('change', (event) => handleFileSelect(event, challengeData.day));
 
+        // Add confirm button click event listener
         confirmButton.addEventListener('click', () => handleConfirm(challengeData.day));
     }
-
-    const nodeContainer = document.createElement('div');
-    nodeContainer.className = 'node-container';
-    nodeContainer.appendChild(node);
-
-    if (challengeData.day < 30) {
-        const connectingLine = document.createElement('div');
-        connectingLine.className = 'connecting-line';
-        nodeContainer.appendChild(connectingLine);
-    }
-
-    return nodeContainer;
+    
+    return node;
 }
 
 function handleDragOver(event) {
@@ -278,7 +274,7 @@ async function handleConfirm(day) {
         // Create next day's challenge
         const nextDay = day + 1;
         
-        if (nextDay <= 30) {
+        if (nextDay <= designChallenges.length) {
             await addDoc(challengesRef, {
                 day: nextDay,
                 description: designChallenges[nextDay - 1],
