@@ -288,7 +288,13 @@ async function handleConfirm(day) {
 
         const challengeDoc = querySnapshot.docs[0];
         const imageContainer = document.getElementById(`image-container-${day}`);
-        const imageUrl = imageContainer.querySelector('img').src;
+        const imageElement = imageContainer.querySelector('img');
+
+        if (!imageElement) {
+            throw new Error('Please upload your design to progress to the next day');
+        }
+
+        const imageUrl = imageElement.src;
 
         console.log(`Confirming challenge for day ${day} with image URL: ${imageUrl}`);
 
@@ -311,7 +317,7 @@ async function handleConfirm(day) {
 
     } catch (error) {
         console.error('Error confirming challenge:', error);
-        alert(`Failed to confirm challenge: ${error.message}`);
+        alert(`${error.message}`);
     }
 }
 

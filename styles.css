@@ -526,7 +526,7 @@ form input {
 
 .node.current .confirm-button.disabled {
     background-color: transparent;
-    border: 2px solid #4CAF50;
+    border: 2px solid rgba(76, 175, 80, 0.3);
     cursor: not-allowed;
 }
 
@@ -535,5 +535,5 @@ form input {
 }
 
 .node.current .confirm-button.disabled .confirm-icon {
-    fill: #4CAF50;
+    fill: rgba(76, 175, 80, 0.3);
 }
