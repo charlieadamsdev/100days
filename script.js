@@ -32,10 +32,7 @@ const designChallenges = [
     "Interactive Data Visualization",
     "Custom Video Player UI",
     "Interactive Dashboard UI",
-    "E-commerce Product Page",
-    "Animated Loading Spinner",
-    "Responsive Pricing Table",
-    "Interactive Chat Interface"
+    "E-commerce Product Page"
 ];
 
 let challengeContainer = null;
@@ -146,19 +143,8 @@ async function renderNodes() {
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
-            if (challengeData.completed || challengeData.day === currentDay) {
-                const node = createNode(challengeData);
-                nodes.push(node);
-            }
-        });
-
-        console.log('Number of nodes created:', nodes.length);
-
-        // Sort nodes in descending order (latest day on top)
-        nodes.sort((a, b) => {
-            const dayA = parseInt(a.querySelector('h2').textContent.split(' ')[1]);
-            const dayB = parseInt(b.querySelector('h2').textContent.split(' ')[1]);
-            return dayB - dayA;
+            const node = createNode(challengeData);
+            nodes.push(node);
         });
 
         // Append nodes
@@ -186,7 +172,7 @@ function createNode(challengeData) {
         <p>${designChallenges[challengeData.day - 1] || challengeData.description}</p>
         <div class="node-image-container" id="image-container-${challengeData.day}">
             ${challengeData.completed && challengeData.imageUrl ? 
-                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 200px; height: 200px; object-fit: cover;">` :
+                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 250px; height: 250px; object-fit: cover;">` :
                 `<input type="file" id="file-input-${challengeData.day}" style="display: none;" accept="image/*">
                  <label for="file-input-${challengeData.day}" class="upload-label">
                      <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -298,12 +284,22 @@ async function handleConfirm(day) {
 
         console.log(`Challenge day ${day} marked as completed`);
 
-        // Find the next uncompleted day
-        const allChallengesQuery = query(challengesRef, orderBy('day', 'asc'));
-        const allChallengesSnapshot = await getDocs(allChallengesQuery);
-        currentDay = allChallengesSnapshot.docs.find(doc => !doc.data().completed)?.data().day || day + 1;
+        // Create next day's challenge
+        const nextDay = day + 1;
+        
+        if (nextDay <= designChallenges.length) {
+            await addDoc(challengesRef, {
+                day: nextDay,
+                description: designChallenges[nextDay - 1],
+                completed: false
+            });
+            console.log(`Created challenge for day ${nextDay}`);
+        } else {
+            console.log('All challenges completed');
+        }
 
-        // Render nodes to show the updated state
+        // Reload challenges and render nodes
+        await loadChallenges();
         await renderNodes();
 
     } catch (error) {
