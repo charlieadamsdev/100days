@@ -47,13 +47,14 @@ body {
 }
 
 .node.current {
-    border: none;
+    border: 1px solid transparent;
     min-height: 300px;
     background: 
-        linear-gradient(to bottom right, #303030, #1A1919) padding-box,
+        linear-gradient(to bottom right, #1E1E1E, #181818) padding-box,
         linear-gradient(to bottom right, #8AB7E1, #454545) border-box;
     border-radius: 20px;
     position: relative;
+    overflow: hidden;
 }
 
 .node.current::before {
@@ -63,6 +64,21 @@ body {
     background: linear-gradient(to bottom right, #8AB7E1, #454545);
     border-radius: inherit;
     z-index: -1;
+}
+
+.node.current h2 {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #888;
+    font-weight: normal;
+}
+
+.node.current p {
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    color: #fff;
+    font-weight: normal;
 }
 
 .node h2 {
@@ -442,8 +458,8 @@ form input {
 }
 
 .node .confirm-icon {
-    width: 50px;
-    height: 50px;
+    width: 24px;
+    height: 24px;
     fill: white;
     display: block;
 }
@@ -459,4 +475,65 @@ form input {
 
 .node .confirm-button.disabled .confirm-icon {
     fill: #999999;
+}
+
+.node.current .upload-label {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.node.current .upload-label:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.node.current .upload-icon {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+.node.current .confirm-button {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    background-color: #4CAF50;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    border: none;
+    padding: 0;
+}
+
+.node.current .confirm-button:hover {
+    background-color: #45a049;
+}
+
+.node.current .confirm-icon {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.node.current .confirm-button.disabled {
+    background-color: transparent;
+    border: 2px solid #4CAF50;
+    cursor: not-allowed;
+}
+
+.node.current .confirm-button.disabled:hover {
+    background-color: transparent;
+}
+
+.node.current .confirm-button.disabled .confirm-icon {
+    fill: #4CAF50;
 }
