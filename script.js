@@ -196,13 +196,12 @@ function createNode(challengeData) {
             }
         </div>
         ${!challengeData.completed ? `
-            <button class="confirm-button" id="confirm-button-${challengeData.day}" style="display: none;">
+            <button class="confirm-button ${!challengeData.imageUrl ? 'disabled' : ''}" id="confirm-button-${challengeData.day}">
                 <svg class="confirm-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
                 </svg>
             </button>` : ''}
     `;
-    
     if (!challengeData.completed) {
         const imageContainer = node.querySelector(`#image-container-${challengeData.day}`);
         const fileInput = node.querySelector(`#file-input-${challengeData.day}`);
@@ -266,7 +265,7 @@ async function handleImageUpload(file, day) {
         
         // Show the confirm button
         const confirmButton = document.getElementById(`confirm-button-${day}`);
-        confirmButton.style.display = 'flex';
+        confirmButton.classList.remove('disabled');
     } catch (error) {
         console.error('Error uploading image:', error);
         alert(`Failed to upload image: ${error.message}`);

@@ -65,6 +65,7 @@ body {
 }
 
 .node h2 {
+<<<<<<< HEAD
     font-size: 16px;
     margin-bottom: 10px;
     color: #888;
@@ -74,6 +75,15 @@ body {
 .node p {
     font-size: 24px;
     margin-top: 0;
+=======
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #888;
+}
+
+.node p {
+    font-size: 20px;
+>>>>>>> parent of b9b7d20 (added basic styling)
     margin-bottom: 20px;
     color: #fff;
     font-weight: bold;
@@ -83,17 +93,24 @@ body {
     width: 200px;
     height: 200px;
     margin: 20px auto;
+<<<<<<< HEAD
     background: 
         linear-gradient(to bottom right, #151515, #0F0F0F) padding-box,
         linear-gradient(to bottom right, #8AB7E1, #454545) border-box;
     border: 1px solid transparent;
+=======
+    background-color: #2a2a2a;
+>>>>>>> parent of b9b7d20 (added basic styling)
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
     overflow: hidden;
+<<<<<<< HEAD
     flex-shrink: 0;  /* Prevent shrinking */
     position: relative;
+=======
+>>>>>>> parent of b9b7d20 (added basic styling)
 }
 
 .node-image-container::before {
@@ -414,10 +431,13 @@ form input {
 
 .confirm-button:hover {
     background-color: #45a049;
+<<<<<<< HEAD
 }
 
 .confirm-icon {
     width: 24px;
     height: 24px;
     fill: white;
+=======
+>>>>>>> parent of b9b7d20 (added basic styling)
 }
