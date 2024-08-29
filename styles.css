@@ -32,7 +32,7 @@ body {
 .node {
     background-color: #1e1e1e;
     border-radius: 15px;
-    padding: 30px;
+    padding: 60px 30px;
     margin: 30px 0;
     width: 80%;
     max-width: 500px;
@@ -43,6 +43,7 @@ body {
     justify-content: center;
     min-height: 250px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
 .node.current {
@@ -66,7 +67,8 @@ body {
 
 .node h2 {
     font-size: 16px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    margin-block-start: 0px;
     color: #888;
     font-weight: normal;
 }
@@ -76,7 +78,7 @@ body {
     margin-top: 0;
     margin-bottom: 20px;
     color: #fff;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .node-image-container {
@@ -95,6 +97,10 @@ body {
     overflow: visible;
     flex-shrink: 0;
     position: relative;
+    margin-bottom: 20px; /* Add some space between the image container and the button */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .node-image-container::before {
@@ -422,15 +428,13 @@ form input {
     background-color: #4CAF50;
     border-radius: 50%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    transition: background-color 0.3s;
-    border: none;
-    position: absolute;
-    bottom: -25px;
-    left: 50%;
-    transform: translateX(-50%);
+    align-items: center;
+    margin-top: 10px;
     z-index: 10;
+    border: none;
+    position: static;
+    padding: 0;
 }
 
 .node .confirm-button:hover {
@@ -438,9 +442,10 @@ form input {
 }
 
 .node .confirm-icon {
-    width: 24px;
-    height: 24px;
+    width: 50px;
+    height: 50px;
     fill: white;
+    display: block;
 }
 
 .node .confirm-button.disabled {
