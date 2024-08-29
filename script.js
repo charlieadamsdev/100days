@@ -173,6 +173,9 @@ async function renderNodes() {
 }
 
 function createNode(challengeData) {
+    const nodeContainer = document.createElement('div');
+    nodeContainer.classList.add('node-container');
+
     const node = document.createElement('div');
     node.classList.add('node');
     if (challengeData.completed) {
@@ -201,6 +204,15 @@ function createNode(challengeData) {
                 </svg>
             </button>` : ''}
     `;
+
+    nodeContainer.appendChild(node);
+
+    if (challengeData.completed && challengeData.day > 1) {
+        const connectingLine = document.createElement('div');
+        connectingLine.classList.add('connecting-line');
+        nodeContainer.appendChild(connectingLine);
+    }
+
     if (!challengeData.completed && challengeData.day === currentDay) {
         const imageContainer = node.querySelector(`#image-container-${challengeData.day}`);
         const fileInput = node.querySelector(`#file-input-${challengeData.day}`);
@@ -218,7 +230,7 @@ function createNode(challengeData) {
         confirmButton.addEventListener('click', () => handleConfirm(challengeData.day));
     }
     
-    return node;
+    return nodeContainer;
 }
 
 function handleDragOver(event) {
