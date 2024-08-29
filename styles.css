@@ -65,7 +65,6 @@ body {
 }
 
 .node h2 {
-<<<<<<< HEAD
     font-size: 16px;
     margin-bottom: 10px;
     color: #888;
@@ -75,15 +74,6 @@ body {
 .node p {
     font-size: 24px;
     margin-top: 0;
-=======
-    font-size: 24px;
-    margin-bottom: 15px;
-    color: #888;
-}
-
-.node p {
-    font-size: 20px;
->>>>>>> parent of b9b7d20 (added basic styling)
     margin-bottom: 20px;
     color: #fff;
     font-weight: bold;
@@ -92,25 +82,19 @@ body {
 .node-image-container {
     width: 200px;
     height: 200px;
-    margin: 20px auto;
-<<<<<<< HEAD
+    margin: 20px auto 35px;
     background: 
         linear-gradient(to bottom right, #151515, #0F0F0F) padding-box,
         linear-gradient(to bottom right, #8AB7E1, #454545) border-box;
     border: 1px solid transparent;
-=======
-    background-color: #2a2a2a;
->>>>>>> parent of b9b7d20 (added basic styling)
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    overflow: hidden;
-<<<<<<< HEAD
-    flex-shrink: 0;  /* Prevent shrinking */
+    overflow: visible;
+    flex-shrink: 0;
     position: relative;
-=======
->>>>>>> parent of b9b7d20 (added basic styling)
 }
 
 .node-image-container::before {
@@ -160,7 +144,7 @@ body {
     right: 20px;
     display: flex;
     gap: 10px;
-    z-index: 9999; /* Ensure buttons are above other elements */
+    z-index: 1000;
 }
 
 .zoom-button {
@@ -180,6 +164,23 @@ body {
 
 .zoom-button:hover {
     background-color: #555;
+}
+
+.logout-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
 }
 
 /* Styles for zoomed out state */
@@ -252,13 +253,15 @@ body {
 .zoom-controls button {
     width: 40px;
     height: 40px;
-    margin-left: 10px;
     background-color: #333;
     color: white;
     border: none;
     border-radius: 50%;
     font-size: 20px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .challenge-container.zoomed-out {
@@ -412,32 +415,43 @@ form input {
     font-size: 16px;
 }
 
-.confirm-button {
+.node .confirm-button {
     cursor: pointer;
     width: 50px;
     height: 50px;
     background-color: #4CAF50;
     border-radius: 50%;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     border: none;
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
 }
 
-.confirm-button:hover {
+.node .confirm-button:hover {
     background-color: #45a049;
-<<<<<<< HEAD
 }
 
-.confirm-icon {
+.node .confirm-icon {
     width: 24px;
     height: 24px;
     fill: white;
-=======
->>>>>>> parent of b9b7d20 (added basic styling)
+}
+
+.node .confirm-button.disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.node .confirm-button.disabled:hover {
+    background-color: #cccccc;
+}
+
+.node .confirm-button.disabled .confirm-icon {
+    fill: #999999;
 }
