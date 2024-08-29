@@ -1,0 +1,17 @@
+This is a 30-day design challenge application built with HTML, CSS, and JavaScript, using Firebase for authentication, database, and storage.
+
+Key components of the application:
+
+1/ User Authentication: Users can register and log in using email and password.
+
+2/ Challenge Tracker: The main feature is a 30-day design challenge tracker where users complete daily design tasks.
+
+3/ Challenge Nodes: Each day's challenge is represented by a "node" containing the day number, challenge description, and an area to upload an image of the completed design.
+
+4/ Image Upload: Users can upload images of their completed designs using drag-and-drop or file selection.
+
+5/ Progress Tracking: The application tracks user progress, showing completed and current challenges.
+
+6/ Responsive Design: The UI is designed to be responsive, with a zoomed-out view for an overview of all challenges.
+
+7/ Firebase Integration: The app uses Firebase for user authentication, storing challenge data, and image storage.

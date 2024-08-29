@@ -32,7 +32,10 @@ const designChallenges = [
     "Interactive Data Visualization",
     "Custom Video Player UI",
     "Interactive Dashboard UI",
-    "E-commerce Product Page"
+    "E-commerce Product Page",
+    "Animated Loading Spinner",
+    "Responsive Pricing Table",
+    "Interactive Chat Interface"
 ];
 
 let challengeContainer = null;
@@ -143,8 +146,19 @@ async function renderNodes() {
         querySnapshot.forEach((doc) => {
             const challengeData = doc.data();
             console.log('Challenge data:', challengeData);
-            const node = createNode(challengeData);
-            nodes.push(node);
+            if (challengeData.completed || challengeData.day === currentDay) {
+                const node = createNode(challengeData);
+                nodes.push(node);
+            }
+        });
+
+        console.log('Number of nodes created:', nodes.length);
+
+        // Sort nodes in descending order (latest day on top)
+        nodes.sort((a, b) => {
+            const dayA = parseInt(a.querySelector('h2').textContent.split(' ')[1]);
+            const dayB = parseInt(b.querySelector('h2').textContent.split(' ')[1]);
+            return dayB - dayA;
         });
 
         // Append nodes
@@ -163,16 +177,15 @@ function createNode(challengeData) {
     node.classList.add('node');
     if (challengeData.completed) {
         node.classList.add('completed');
-    }
-    if (!challengeData.completed) {
+    } else if (challengeData.day === currentDay) {
         node.classList.add('current');
     }
     node.innerHTML = `
         <h2>Day ${challengeData.day}</h2>
         <p>${designChallenges[challengeData.day - 1] || challengeData.description}</p>
         <div class="node-image-container" id="image-container-${challengeData.day}">
-            ${challengeData.completed && challengeData.imageUrl ? 
-                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 250px; height: 250px; object-fit: cover;">` :
+            ${challengeData.imageUrl ? 
+                `<img src="${challengeData.imageUrl}" alt="Day ${challengeData.day} design" style="width: 200px; height: 200px; object-fit: cover;">` :
                 `<input type="file" id="file-input-${challengeData.day}" style="display: none;" accept="image/*">
                  <label for="file-input-${challengeData.day}" class="upload-label">
                      <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -188,7 +201,7 @@ function createNode(challengeData) {
                 </svg>
             </button>` : ''}
     `;
-    if (!challengeData.completed) {
+    if (!challengeData.completed && challengeData.day === currentDay) {
         const imageContainer = node.querySelector(`#image-container-${challengeData.day}`);
         const fileInput = node.querySelector(`#file-input-${challengeData.day}`);
         const confirmButton = node.querySelector(`#confirm-button-${challengeData.day}`);
@@ -277,29 +290,23 @@ async function handleConfirm(day) {
         const imageContainer = document.getElementById(`image-container-${day}`);
         const imageUrl = imageContainer.querySelector('img').src;
 
+        console.log(`Confirming challenge for day ${day} with image URL: ${imageUrl}`);
+
         await updateDoc(challengeDoc.ref, {
             completed: true,
             imageUrl: imageUrl
         });
 
-        console.log(`Challenge day ${day} marked as completed`);
+        console.log(`Challenge day ${day} marked as completed and image URL saved`);
 
-        // Create next day's challenge
-        const nextDay = day + 1;
-        
-        if (nextDay <= designChallenges.length) {
-            await addDoc(challengesRef, {
-                day: nextDay,
-                description: designChallenges[nextDay - 1],
-                completed: false
-            });
-            console.log(`Created challenge for day ${nextDay}`);
-        } else {
-            console.log('All challenges completed');
-        }
+        // Find the next uncompleted day
+        const allChallengesQuery = query(challengesRef, orderBy('day', 'asc'));
+        const allChallengesSnapshot = await getDocs(allChallengesQuery);
+        currentDay = allChallengesSnapshot.docs.find(doc => !doc.data().completed)?.data().day || day + 1;
 
-        // Reload challenges and render nodes
-        await loadChallenges();
+        console.log(`Next uncompleted day: ${currentDay}`);
+
+        // Render nodes to show the updated state
         await renderNodes();
 
     } catch (error) {

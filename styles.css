@@ -6,7 +6,7 @@ body, html {
 }
 
 body {
-    background-color: #121212;
+    background-color: #181818;
     color: #ffffff;
     font-family: Arial, sans-serif;
     display: flex;
@@ -32,7 +32,7 @@ body {
 .node {
     background-color: #1e1e1e;
     border-radius: 15px;
-    padding: 30px;
+    padding: 60px 30px;
     margin: 30px 0;
     width: 80%;
     max-width: 500px;
@@ -43,6 +43,7 @@ body {
     justify-content: center;
     min-height: 250px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
 .node.current {
@@ -65,13 +66,16 @@ body {
 }
 
 .node h2 {
-    font-size: 24px;
-    margin-bottom: 15px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    margin-block-start: 0px;
     color: #888;
+    font-weight: normal;
 }
 
 .node p {
-    font-size: 20px;
+    font-size: 24px;
+    margin-top: 0;
     margin-bottom: 20px;
     color: #fff;
     font-weight: normal;
@@ -80,14 +84,23 @@ body {
 .node-image-container {
     width: 200px;
     height: 200px;
-    margin: 20px auto;
-    background-color: #2a2a2a;
+    margin: 20px auto 35px;
+    background: 
+        linear-gradient(to bottom right, #151515, #0F0F0F) padding-box,
+        linear-gradient(to bottom right, #8AB7E1, #454545) border-box;
+    border: 1px solid transparent;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    overflow: hidden;
+    overflow: visible;
+    flex-shrink: 0;
+    position: relative;
+    margin-bottom: 20px; /* Add some space between the image container and the button */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .node-image-container::before {
@@ -426,4 +439,24 @@ form input {
 
 .node .confirm-button:hover {
     background-color: #45a049;
+}
+
+.node .confirm-icon {
+    width: 50px;
+    height: 50px;
+    fill: white;
+    display: block;
+}
+
+.node .confirm-button.disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.node .confirm-button.disabled:hover {
+    background-color: #cccccc;
+}
+
+.node .confirm-button.disabled .confirm-icon {
+    fill: #999999;
 }
