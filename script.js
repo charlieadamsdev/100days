@@ -207,7 +207,8 @@ function createNode(challengeData) {
 
     nodeContainer.appendChild(node);
 
-    if (challengeData.completed && challengeData.day > 1) {
+    if ((challengeData.completed && challengeData.day > 1) || 
+        (!challengeData.completed && challengeData.day === currentDay && challengeData.day > 1)) {
         const connectingLine = document.createElement('div');
         connectingLine.classList.add('connecting-line');
         nodeContainer.appendChild(connectingLine);
