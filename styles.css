@@ -697,3 +697,41 @@ form input {
     background-color: #2a2a2a;
     border-radius: 5px;
 }
+
+.like-container {
+    margin-top: 10px;
+}
+
+.like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.like-icon {
+    width: 24px;
+    height: 24px;
+    transition: fill 0.3s ease;
+}
+
+.like-button.zero-likes .like-icon {
+    fill: #808080; /* Grey color for zero likes */
+}
+
+.like-button.liked .like-icon {
+    fill: #ff0000; /* Red color for liked challenges */
+}
+
+.like-button:not(.liked):not(.zero-likes) .like-icon {
+    fill: #ff6666; /* Light red color for unliked challenges with likes */
+}
+
+.like-count {
+    font-size: 16px;
+    vertical-align: middle;
+}

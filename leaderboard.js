@@ -85,25 +85,34 @@ async function showUserChallenges(userId) {
         // Sort challenges by day in descending order
         completedChallenges.sort((a, b) => b.day - a.day);
 
+        const currentUser = auth.currentUser;
+
         userChallengesDiv.innerHTML = '';
-        completedChallenges.forEach(challenge => {
+        for (const challenge of completedChallenges) {
             const challengeElement = document.createElement('div');
             challengeElement.classList.add('completed-challenge');
+            
+            // Check if the current user has liked this challenge
+            const likeRef = doc(db, 'users', userId, 'challenges', challenge.id, 'likes', currentUser.uid);
+            const likeDoc = await getDoc(likeRef);
+            const isLiked = likeDoc.exists();
+            const likesCount = challenge.likes || 0;
+            
             challengeElement.innerHTML = `
                 <h3>Day ${challenge.day}</h3>
                 <p>${challenge.description}</p>
                 ${challenge.imageUrl ? `<img src="${challenge.imageUrl}" alt="Day ${challenge.day} design" style="width: 200px; height: 200px; object-fit: cover;">` : ''}
                 <div class="like-container">
-                    <button class="like-button" data-challengeid="${challenge.id}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    <button class="like-button ${isLiked ? 'liked' : ''} ${likesCount === 0 ? 'zero-likes' : ''}" data-challengeid="${challenge.id}">
+                        <svg class="like-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
                         </svg>
                     </button>
-                    <span class="like-count">${challenge.likes || 0}</span>
+                    <span class="like-count">${likesCount}</span>
                 </div>
             `;
             userChallengesDiv.appendChild(challengeElement);
-        });
+        }
 
         // Add event listeners to like buttons
         const likeButtons = userChallengesDiv.querySelectorAll('.like-button');
@@ -142,27 +151,35 @@ async function likeChallenge(userId, challengeId) {
 
     try {
         const likeDoc = await getDoc(likeRef);
-        if (likeDoc.exists()) {
-            console.log('User has already liked this challenge');
-            return;
-        }
-
         await runTransaction(db, async (transaction) => {
             const challengeDoc = await transaction.get(challengeRef);
             if (!challengeDoc.exists()) {
                 throw "Challenge document does not exist!";
             }
 
-            const newLikes = (challengeDoc.data().likes || 0) + 1;
-            transaction.update(challengeRef, { likes: newLikes });
-            transaction.set(likeRef, { timestamp: serverTimestamp() });
+            const currentLikes = challengeDoc.data().likes || 0;
+            if (likeDoc.exists()) {
+                // Remove like
+                transaction.delete(likeRef);
+                transaction.update(challengeRef, { likes: currentLikes - 1 });
+            } else {
+                // Add like
+                transaction.set(likeRef, { timestamp: serverTimestamp() });
+                transaction.update(challengeRef, { likes: currentLikes + 1 });
+            }
         });
 
-        console.log('Like added successfully');
-        // Update the UI to reflect the new like count
-        const likeCountElement = document.querySelector(`[data-challengeid="${challengeId}"]`).nextElementSibling;
-        likeCountElement.textContent = parseInt(likeCountElement.textContent) + 1;
+        console.log('Like toggled successfully');
+        // Update the UI to reflect the new like count and state
+        const likeButton = document.querySelector(`[data-challengeid="${challengeId}"]`);
+        const likeCountElement = likeButton.nextElementSibling;
+        const newLikesCount = parseInt(likeCountElement.textContent) + (likeDoc.exists() ? -1 : 1);
+        likeCountElement.textContent = newLikesCount;
+        
+        // Update button classes based on new state
+        likeButton.classList.toggle('liked', !likeDoc.exists());
+        likeButton.classList.toggle('zero-likes', newLikesCount === 0);
     } catch (error) {
-        console.error('Error adding like:', error);
+        console.error('Error toggling like:', error);
     }
 }
