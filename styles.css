@@ -27,13 +27,14 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .node {
     background-color: #1e1e1e;
     border-radius: 15px;
     padding: 30px;
-    margin: 30px 0;
+    margin: 0;
     width: 80%;
     max-width: 500px;
     text-align: center;
@@ -171,9 +172,9 @@ body {
 
 .connecting-line {
     width: 2px;
-    height: 60px;
+    height: 30px;
     background-color: #333;
-    margin: 0 auto;
+    margin: 10px auto;
     position: relative;
     z-index: 1;
 }
@@ -554,4 +555,44 @@ form input {
 
 .node.current .confirm-button.disabled .confirm-icon {
     fill: rgba(76, 175, 80, 0.3);
+}
+
+.node-image-container {
+    position: relative;
+}
+
+.fullscreen-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    z-index: 10;
+}
+
+.node-image-container:hover .fullscreen-icon {
+    display: block;
+}
+
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.fullscreen-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
 }

@@ -231,6 +231,14 @@ function createNode(challengeData) {
         confirmButton.addEventListener('click', () => handleConfirm(challengeData.day));
     }
     
+    if (challengeData.completed && challengeData.imageUrl) {
+        const fullscreenIcon = document.createElement('div');
+        fullscreenIcon.classList.add('fullscreen-icon');
+        fullscreenIcon.innerHTML = '🔍';
+        fullscreenIcon.addEventListener('click', () => openFullscreen(challengeData.imageUrl));
+        node.querySelector('.node-image-container').appendChild(fullscreenIcon);
+    }
+    
     return nodeContainer;
 }
 
@@ -342,4 +350,20 @@ function createPlaceholderNode(day) {
         <p>Complete the current day to unlock</p>
     `;
     return node;
+}
+
+function openFullscreen(imageUrl) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('fullscreen-overlay');
+    
+    const image = document.createElement('img');
+    image.src = imageUrl;
+    image.classList.add('fullscreen-image');
+    
+    overlay.appendChild(image);
+    document.body.appendChild(overlay);
+    
+    overlay.addEventListener('click', () => {
+        document.body.removeChild(overlay);
+    });
 }
