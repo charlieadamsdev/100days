@@ -253,9 +253,6 @@ body {
 }
 
 .logout-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
     background-color: #f44336;
     color: white;
     border: none;
@@ -263,10 +260,17 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-top: 20px;
+    display: none; /* Hide by default */
 }
 
 .logout-button:hover {
     background-color: #d32f2f;
+}
+
+/* Show logout button only on the account page */
+body:has(.container) .logout-button {
+    display: inline-block;
 }
 
 /* Styles for zoomed out state */

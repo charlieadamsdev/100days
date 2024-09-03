@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account</title>
+    <title>Account - 30 Day Design Challenge</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <nav class="navbar">
+        <div class="streak">Streak: <span id="streak-count">4</span></div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="account.html" class="active">Account</a>
+        </div>
+    </nav>
     <div class="container">
         <h1>Account Settings</h1>
-        <form>
+        <form id="account-form">
             <label for="username">Username:</label>
             <input type="text" id="username" value="User1">
             <br><br>
@@ -18,6 +26,9 @@
             <br><br>
             <button type="submit">Save</button>
         </form>
+        <button id="logout-button" class="logout-button">Logout</button>
     </div>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="account.js"></script>
 </body>
 </html>
