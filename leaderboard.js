@@ -41,13 +41,22 @@ async function loadLeaderboard() {
     leaderboardTable.innerHTML = '';
     leaderboardData.forEach((user) => {
         const row = leaderboardTable.insertRow();
+        row.classList.add('leaderboard-row');
+        row.setAttribute('data-userid', user.userId);
         const usernameCell = row.insertCell(0);
         const nodesCompletedCell = row.insertCell(1);
-        const totalLikesCell = row.insertCell(2);
 
-        usernameCell.innerHTML = `<a href="#" class="username-link" data-userid="${user.userId}">${user.username}</a>`;
+        usernameCell.textContent = user.username;
         nodesCompletedCell.textContent = user.completedNodes;
-        totalLikesCell.textContent = user.totalLikes;
+    });
+
+    // Add event listeners to rows
+    const leaderboardRows = document.querySelectorAll('.leaderboard-row');
+    leaderboardRows.forEach(row => {
+        row.addEventListener('click', (e) => {
+            const userId = e.currentTarget.getAttribute('data-userid');
+            showUserChallenges(userId);
+        });
     });
 
     // Add event listeners to username links

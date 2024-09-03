@@ -16,25 +16,26 @@
         </div>
     </nav>
     <div class="container">
-        <h1>Leaderboard</h1>
-        <table id="leaderboard-table">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Nodes completed</th>
-                    <th>Total Likes</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Leaderboard data will be dynamically added here -->
-            </tbody>
-        </table>
-        <div id="user-challenges-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2 id="modal-username"></h2>
-                <div id="user-challenges"></div>
-            </div>
+        <div class="leaderboard-wrapper">
+            <h1>Leaderboard</h1>
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Nodes completed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Leaderboard data will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="user-challenges-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-username"></h2>
+            <div id="user-challenges"></div>
         </div>
     </div>
     <script type="module" src="firebase-config.js"></script>
